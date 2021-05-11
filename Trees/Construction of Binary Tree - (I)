@@ -1,0 +1,130 @@
+
+#include<bits/stdc++.h>
+using namespace std;
+
+struct Node
+{
+	int data;
+	struct Node *left;
+	struct Node *right;
+	
+	Node(int x){
+	    data = x;
+	    left = NULL;
+	    right = NULL;
+	}
+};
+
+
+void printPostOrder(Node *root)
+{
+	if(root==NULL)
+		return;
+	printPostOrder(root->left);
+	printPostOrder(root->right);
+	cout<<root->data<<" ";
+}
+
+ // } Driver Code Ends
+
+
+/*Complete the code here.
+Node is as follows:
+struct Node
+{
+  int data;
+  Node* left;
+  Node* right;
+};
+*/
+
+class Solution{
+    public:
+    int preIndex = 0;
+    /*void printLevelOrderTraversal_debug(Node *node){
+        if(node ==  NULL)
+            return;
+        
+        queue<Node *> q;
+        q.push(node);
+        while(!q.empty()){
+            int size = q.size();
+            while(size-- > 0){
+                Node *temp = q.front();
+                cout << temp->data << " ";
+                q.pop();
+                if(temp->left)
+                    q.push(temp->left);
+                if(temp->right)
+                    q.push(temp->right);
+            }
+            cout << "\n";
+        }
+    }*/
+    
+    Node *constructTree(int* in, int* pre, int start_in, int end_in, unordered_map<int, int>& m){
+        
+         // This index is the index of sub-root node
+        
+        // Base condition to store the left and right of child nodes as NULL values
+        if(start_in > end_in)
+            return NULL;
+        
+        int d  = pre[preIndex++];
+        Node *newNode = new Node(d);
+        
+        if(newNode == NULL)
+            return NULL;
+        
+        // If this newly created node has no children, return this node
+        if(start_in == end_in)
+            return newNode;
+        
+        // Search the element of preOrder present at preIndex in inorder array
+        // Get its position from the map
+        int pos = m[d];
+        if(pos <= end_in){
+            newNode->left = constructTree(in, pre, start_in, pos-1, m);
+            newNode->right = constructTree(in, pre, pos+1, end_in, m);
+        }
+        return newNode;
+    }
+    Node* buildTree(int in[],int pre[], int n)
+    {
+        // Code here
+        unordered_map<int, int> m;
+
+        for(int i = 0; i < n; ++i){
+            m[in[i]] = i;
+        }
+        Node *root = constructTree(in, pre, 0, n-1, m);
+        
+        // Printing level order traversal to just debug whether out formed tree is correct or not
+        //printLevelOrderTraversal_debug(root);
+        return root;
+        
+    }
+};
+
+// { Driver Code Starts.
+int main()
+{
+	int t;
+	cin>>t;
+	while(t--)
+	{
+		int n;
+		cin>>n;
+		
+		int inorder[n], preorder[n];
+		for(int i=0; i<n; i++)
+			cin>> inorder[i];
+		for(int i=0; i<n; i++)
+			cin>> preorder[i];
+		Solution obj;
+		Node *root = obj.buildTree(inorder, preorder, n);
+		printPostOrder(root);
+		cout<< endl;
+	}
+}
+  // } Driver Code Ends
