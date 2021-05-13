@@ -1,0 +1,59 @@
+// { Driver Code Starts
+#include<bits/stdc++.h>
+using namespace std;
+
+ // } Driver Code Ends
+class Solution{
+  public:
+    int thirdLargest(int a[], int n)
+    {
+        
+        // Number of elements in array should be >= 3
+        if(n < 3)
+            return -1;
+        
+        // This approach basically uses the intermediate steps of bubble sort
+        // Step 1 - get the largest element to n-1 index (last index)
+        for(int i = 0; i<n-1; ++i){
+            if(a[i] > a[i+1]){
+                swap(a[i], a[i+1]);
+            }
+        }
+        
+        // Step 2 - get the second largest element to index n-2 (second last index)
+        for(int i = 0; i<n-2; ++i){
+            if(a[i] > a[i+1]){
+                swap(a[i], a[i+1]);
+            }
+        }
+        
+        // Step 3 - get the third largest element to index n-3 (third last index)
+        for(int i = 0; i<n-3; ++i){
+            if(a[i] > a[i+1]){
+                swap(a[i], a[i+1]);
+            }
+        }
+        
+        // Return this third largest element
+        return a[n-3];
+    }
+
+};
+
+// { Driver Code Starts.
+ 
+int main()
+{
+    int t;
+    cin>>t;
+    while(t--)
+    {
+	    int n;
+	    cin>>n;
+	    int a[n];
+	    for(int i=0;i<n;i++)
+	        cin>>a[i];
+	   Solution obj;
+	    cout<<obj.thirdLargest(a,n)<<endl;
+    }
+}     // } Driver Code Ends
