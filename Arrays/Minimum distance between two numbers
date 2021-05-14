@@ -1,0 +1,61 @@
+// { Driver Code Starts
+#include <bits/stdc++.h>
+using namespace std;
+
+ // } Driver Code Ends
+
+//1 1 1 3 2 2 1
+class Solution{
+  public:
+    int minDist(int a[], int n, int x, int y) {
+        
+        // Index-based distance variable
+        int dist = INT_MAX;
+        
+        // Positions of x and y such that index-based distances are minimized
+        int pos_x = -1, pos_y = -1;
+        
+        for(int i = 0; i<n; ++i){
+            
+            // Get the proper index of x by searching it
+            if(a[i] == x){
+                if(pos_y != -1 && dist > abs(pos_y - i)){
+                    dist = abs(i - pos_y);
+                }
+                pos_x = i;
+            }
+            
+            // Get the proper index of y by searching it
+            if(a[i] == y){
+                if(pos_x != -1 && dist > abs(i - pos_x)){
+                    dist = abs(pos_x - i);
+                }
+                pos_y = i;
+            }
+        }
+        
+        // False conditions to be checked
+        if(pos_x == -1 || pos_y == -1)
+            return -1;
+        else 
+            return dist;
+    }
+};
+
+// { Driver Code Starts.
+int main() {
+    int t;
+    cin >> t;
+    while (t--) {
+        int n;
+        cin >> n;
+        int a[n];
+        for (int i = 0; i < n; i++) cin >> a[i];
+        int x, y;
+        cin >> x >> y;
+        Solution obj;
+        cout << obj.minDist(a, n, x, y) << endl;
+    }
+    return 0;
+}
+  // } Driver Code Ends
