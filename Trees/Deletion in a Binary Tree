@@ -1,0 +1,219 @@
+// { Driver Code Starts
+#include <bits/stdc++.h>
+using namespace std;
+
+struct Node
+{
+    int data;
+    struct Node *left;
+    struct Node *right;
+};
+Node* newNode(int val)
+{
+    Node* temp = new Node;
+    temp->data = val;
+    temp->left = NULL;
+    temp->right = NULL;
+    
+    return temp;
+}
+Node* buildTree(string str)
+{   
+    // Corner Case
+    if(str.length() == 0 || str[0] == 'N')
+            return NULL;
+    
+    // Creating vector of strings from input 
+    // string after spliting by space
+    vector<string> ip;
+    
+    istringstream iss(str);
+    for(string str; iss >> str; )
+        ip.push_back(str);
+        
+    // Create the root of the tree
+    Node* root = newNode(stoi(ip[0]));
+        
+    // Push the root to the queue
+    queue<Node*> queue;
+    queue.push(root);
+        
+    // Starting from the second element
+    int i = 1;
+    while(!queue.empty() && i < ip.size()) {
+            
+        // Get and remove the front of the queue
+        Node* currNode = queue.front();
+        queue.pop();
+            
+        // Get the current node's value from the string
+        string currVal = ip[i];
+            
+        // If the left child is not null
+        if(currVal != "N") {
+                
+            // Create the left child for the current node
+            currNode->left = newNode(stoi(currVal));
+                
+            // Push it to the queue
+            queue.push(currNode->left);
+        }
+            
+        // For the right child
+        i++;
+        if(i >= ip.size())
+            break;
+        currVal = ip[i];
+            
+        // If the right child is not null
+        if(currVal != "N") {
+                
+            // Create the right child for the current node
+            currNode->right = newNode(stoi(currVal));
+                
+            // Push it to the queue
+            queue.push(currNode->right);
+        }
+        i++;
+    }
+    
+    return root;
+}
+struct Node* deletionBT(struct Node* root, int key);
+void inn(Node *node)
+{
+    if(node==NULL)
+        return;
+    
+    inn(node->left);
+    cout<<node->data<<" ";
+    inn(node->right);
+}
+
+int main()
+{
+    int t;
+	scanf("%d ",&t);
+    while(t--)
+    {
+        int k;
+        scanf("%d ",&k);
+        string s;
+		getline(cin,s);
+		Node* root = buildTree(s);
+		root=deletionBT(root,k);
+		inn(root);
+		cout<<endl;
+    }
+    return 0;
+}
+// } Driver Code Ends
+
+
+/*
+Structre of the node of the tree is as
+struct Node
+{
+	int data;
+	Node* left, *right;
+};
+*/
+// A global pointer having parent node of the bottom-most & right-most node
+struct Node *parentOfLastNode = NULL;
+// A global pointer pointing to the bottom-most and right-most node of the tree
+struct Node* lastNode = NULL;
+// A global pointer pointing to the element which is to be deleted
+struct Node* elementToBeDeleted = NULL;
+
+// Utility function to get height of the tree
+int getHeight(struct Node *node){
+    if(node == NULL)
+        return 0;
+    
+    int lDepth = getHeight(node->left);
+    int rDepth = getHeight(node->right);
+    
+    return (lDepth>rDepth)?(lDepth+1):(rDepth+1);
+}
+
+// Check for key in tree first
+void checkKey(struct Node* node, int key){
+    
+    if(node == NULL)
+        return;
+    if(node->data == key){
+        elementToBeDeleted = node;
+        return;
+    }
+    list<struct Node*> l;
+    l.push_back(node); // Initially push the root node
+    while(!l.empty()){
+        int size = l.size();
+        while(size--){
+            struct Node *temp = l.front();
+            l.pop_front();
+            
+            if(temp->left){
+                if(temp->left->data == key){
+                    elementToBeDeleted = temp->left;
+                    return;
+                }
+                else
+                    l.push_back(temp->left);
+            }
+            
+            if(temp->right){
+                if(temp->right->data == key){
+                    elementToBeDeleted = temp->right;
+                    return;
+                }
+                else
+                    l.push_back(temp->right);
+            }
+        }
+    }
+}
+
+// Function to get the bottomest rightest non-NULL node in the tree
+// which will replace the element to be deleted
+struct Node *getBottomRightNode(struct Node* node, int level, struct Node* parent){
+    if(node == NULL)
+        return NULL;
+    
+    if(level == 1){
+        lastNode = node;
+        parentOfLastNode = parent;
+    }
+    getBottomRightNode(node->left, level-1, node);
+    getBottomRightNode(node->right, level-1, node);
+}
+
+// We are required to complete this function
+struct Node* deletionBT(struct Node* root, int key)
+{
+    // Check whether key is present in tree
+    // If present, get that node
+    checkKey(root, key);
+    if(!elementToBeDeleted){
+        return root;
+    }
+        
+    
+    getBottomRightNode(root, getHeight(root), NULL);
+    
+    if(lastNode && parentOfLastNode){
+        //cout << "\nparentOfLastNode = " << parentOfLastNode->data << ", lastNode = " 
+        //<< lastNode->data << ", elementToBeDeleted = " << elementToBeDeleted->data << "\n";
+        if(parentOfLastNode->left == lastNode){
+            elementToBeDeleted->data = lastNode->data;
+            parentOfLastNode->left = NULL;
+            free(lastNode);
+        }
+        else if(parentOfLastNode->right == lastNode){
+            elementToBeDeleted->data = lastNode->data;
+            parentOfLastNode->right = NULL;
+            free(lastNode);
+        }
+    }
+    return root;
+}
