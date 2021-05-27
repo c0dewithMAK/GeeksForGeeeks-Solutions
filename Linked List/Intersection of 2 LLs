@@ -1,0 +1,125 @@
+// { Driver Code Starts
+//
+
+#include <bits/stdc++.h>
+using namespace std;
+
+struct Node
+{
+    int data;
+    Node *next;
+    Node(int val)
+    {
+        data=val;
+        next=NULL;
+    }
+};
+
+Node* inputList(int size)
+{
+    Node *head, *tail;
+    int val;
+    
+    cin>>val;
+    head = tail = new Node(val);
+    
+    while(--size)
+    {
+        cin>>val;
+        tail->next = new Node(val);
+        tail = tail->next;
+    }
+    
+    return head;
+}
+
+void printList(Node* n)
+{
+    while(n)
+    {
+        cout<< n->data << " ";
+        n = n->next;
+    }
+}
+
+
+ // } Driver Code Ends
+/* structure of list node:
+
+struct Node
+{
+    int data;
+    Node *next;
+    Node(int val)
+    {
+        data=val;
+        next=NULL;
+    }
+};
+
+*/
+
+class Solution{
+  public:
+    Node* findIntersection(Node* head1, Node* head2)
+    {
+        Node *head3 = NULL; // head pointer to our final intersection list
+        if(head1==NULL || head2==NULL){
+            // Return NULL if either of the list is empty as there will be no intersection
+            return head3;
+        }
+            
+        Node *curr = head2;
+        // Create a map to store {node->data, node} for each node of list2 => O(m) space
+        map<int, Node*> m;
+        while(curr){
+            // Create the hashmap => O(m) time
+            m.insert({curr->data, curr});
+            curr = curr->next;
+        }
+        
+        curr = head1;
+        Node *temp = NULL;
+        while(curr){
+            // Create our final list from hashmap => O(n) time
+            if(m.find(curr->data) != m.end()){
+                if(!temp){
+                    temp = new Node(curr->data);
+                    head3 = temp;
+                }
+                else{
+                    temp->next = new Node(curr->data);
+                    temp = temp->next;
+                }
+            }
+            curr = curr->next;
+        }
+        // Total time => O(n+m)
+        return head3;
+    }
+};
+
+// { Driver Code Starts.
+
+int main()
+{
+	int t;
+	cin>>t;
+	while(t--)
+	{
+	    int n,m;
+	    
+	    cin>> n;
+	    Node* head1 = inputList(n);
+	    
+	    cin>>m;
+	    Node* head2 = inputList(m);
+	    Solution obj;
+	    Node* result = obj.findIntersection(head1, head2);
+	    
+	    printList(result);
+	    cout<< endl;
+	}
+	return 0;
+}
+  // } Driver Code Ends
