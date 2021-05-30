@@ -1,0 +1,80 @@
+// { Driver Code Starts
+// C++ program to evaluate value of a postfix expression
+
+#include <bits/stdc++.h>
+using namespace std;
+
+
+ // } Driver Code Ends
+
+
+class Solution
+{
+    public:
+    //Function to evaluate a postfix expression.
+    int evaluatePostfix(string S)
+    {
+        if(S.empty())
+            return -1;
+            
+        int res;    
+        stack<int> s;
+        int len = S.length();
+        int i = 0;
+        while(i < len){
+            char ch = S[i];
+            if(ch >= '0' && ch <= '9'){
+                int x = ch - '0';
+                //cout << "Pushing " << x << ", ";
+                s.push(x);
+                ++i;
+                continue;
+            }
+            //cout << "\n";
+            if(s.size() >= 2){
+                int a = s.top();
+                //cout << "Popping " << a << ", ";
+                s.pop();
+                int b = s.top();
+                //cout << "Popping " << b << ", ";
+                s.pop();
+                if(ch == '*'){
+                    res = b*a;
+                }
+                if(ch == '+'){
+                    res = b+a;
+                }
+                if(ch == '-'){
+                    res = b-a;
+                }
+                if(ch == '/'){
+                    res = b/a;
+                }
+                //cout << "Storing res = " << res << ", ";
+                s.push(res);
+                ++i;
+            }
+        }
+        return s.top();
+    }
+};
+
+// { Driver Code Starts.
+
+// Driver program to test above functions
+int main()
+{
+    int t;
+    cin>>t;
+    cin.ignore(INT_MAX, '\n');
+    while(t--)
+    {
+        string S;
+        cin>>S;
+        Solution obj;
+    
+    cout<<obj.evaluatePostfix(S)<<endl;
+    }
+    return 0;
+}
+  // } Driver Code Ends
