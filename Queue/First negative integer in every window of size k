@@ -1,0 +1,88 @@
+// { Driver Code Starts
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<long long> printFirstNegativeInteger(long long int arr[],
+                                             long long int n, long long int k);
+
+// Driver program to test above functions
+int main() {
+    long long int t, i;
+    cin >> t;
+    while (t--) {
+        long long int n;
+        cin >> n;
+        long long int arr[n];
+        for (i = 0; i < n; i++) {
+            cin >> arr[i];
+        }
+        long long int k;
+        cin >> k;
+
+        vector<long long> ans = printFirstNegativeInteger(arr, n, k);
+        for (auto it : ans) cout << it << " ";
+        cout << endl;
+    }
+    return 0;
+}
+// } Driver Code Ends
+
+
+
+
+vector<long long> printFirstNegativeInteger(long long int A[],
+                                             long long int N, long long int K) {
+    // Here we use the sliding window technique
+    vector<long long> res;                                             
+    if(K > N) // Base condition
+        return res;
+        
+    int i = 0; // This is the loop control variable
+    queue<long long> q;
+
+    bool flag = false; // A flag variable to check whether we have any -ve element in the first
+                       // window
+    while(i < K){
+        if(A[i] < 0){
+            // Keep pushing the elements which are -ve in the order that they occur
+            q.push(A[i]);
+        }
+        if(!flag && A[i] < 0){
+            // Push the first neg element in the res array
+            res.push_back(A[i]);
+            flag = true;
+        }
+        ++i;
+    }
+    
+    if(!flag)
+        // If there was no neg element in the first window, then push 0 
+        res.push_back(0);
+    
+    if(K == N)
+        // This is self understood as the complete array has been traversed already above
+        return res;
+        
+    int j = i; //last index of the current window as i has become K+1 now
+    i = 1; // first index of the current window
+    while(j < N){
+        if(A[i-1] == q.front()){
+            // We need to remove the neg element from queue if it is not present 
+            // in the current window
+            q.pop();
+        }
+        if(A[j] < 0)
+            // Push the current neg element of the new window's last index
+            q.push(A[j]);
+            
+        if(q.empty())
+            res.push_back(0);
+        else
+            res.push_back(q.front());
+            
+        ++i;
+        ++j;
+    }
+    // Lastly return the result array
+    return res;                                            
+ }
