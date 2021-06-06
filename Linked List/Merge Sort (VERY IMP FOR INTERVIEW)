@@ -1,0 +1,141 @@
+// { Driver Code Starts
+#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <bits/stdc++.h>
+using namespace std;
+
+struct Node {
+    int data;
+    struct Node* next;
+    Node(int x) {
+        data = x;
+        next = NULL;
+    }
+};
+
+
+ // } Driver Code Ends
+/* Structure of the linked list node is as
+struct Node 
+{
+    int data;
+    struct Node* next;
+    Node(int x) { data = x;  next = NULL; }
+};
+*/
+
+
+class Solution{
+  public:
+  
+    // Function to finally interchange links based on data comparison of nodes
+    Node *sortedMerge(Node *a, Node *b){
+        if(!a)
+            return (b);
+        else if(!b)
+            return (a);
+        
+        Node *result = NULL;
+        /* Pick either a or b, and recur */
+        if(a->data <= b->data){
+            result = a;
+            result->next = sortedMerge(a->next, b);
+        }
+        else {
+            result = b;
+            result->next = sortedMerge(a, b->next);
+        }
+        
+        return result;
+    }
+    
+    /* Split the nodes of the given list into front and back halves,
+    and return the two lists using the reference parameters.
+    If the length is odd, the extra node should go in the front list.
+    Uses the fast/slow pointer strategy. */
+    void frontBackSplit(Node *head, Node **a, Node **b){
+        // We use the slow-fast pointer technique to get to the middle node
+        Node *slow = head;
+        Node *fast = head->next;
+        while(!fast){
+            // Advance slow pointer once and fast pointer twice
+            fast = fast->next;
+            if(!fast){
+                slow = slow->next;
+                fast = fast->next;
+            }
+        }
+        
+        // Once the above loop ends, slow will just be before the middle node
+        *a = head;
+        *b = slow->next;
+        slow->next = NULL;
+    }
+    
+    // Function which actually starts the process
+    void *mergeUtil(Node **head){
+        // Basically we are only interchanging the links here and not the data;
+        
+        Node *headRef = *head;
+        // Base Case
+        if(!headRef || !headRef->next)
+            return headRef;
+            
+        Node *a = NULL, *b = NULL;
+        
+        // This function assigns values as 'a' to middle node and 'b' to the next node of 
+        // middle node - PARTITIONING
+        frontBackSplit(headRef, &a, &b);
+        
+        mergeUtil(&a);
+        mergeUtil(&b);
+        
+        *head = sortedMerge(a, b);
+    }
+    //Parent function to call actual function and sort the given linked list using Merge Sort.
+    Node* mergeSort(Node* head) {
+        
+        if(!head || !head->next)
+            return head;
+        
+        mergeUtil(&head);
+        return head;
+    }
+};
+
+
+// { Driver Code Starts.
+
+void printList(Node* node) {
+    while (node != NULL) {
+        printf("%d ", node->data);
+        node = node->next;
+    }
+    printf("\n");
+}
+
+void push(struct Node** head_ref, int new_data) {
+    Node* new_node = new Node(new_data);
+
+    new_node->next = (*head_ref);
+    (*head_ref) = new_node;
+}
+
+int main() {
+    long test;
+    cin >> test;
+    while (test--) {
+        struct Node* a = NULL;
+        long n, tmp;
+        cin >> n;
+        for (int i = 0; i < n; i++) {
+            cin >> tmp;
+            push(&a, tmp);
+        }
+        Solution obj;
+        a = obj.mergeSort(a);
+        printList(a);
+    }
+    return 0;
+}  // } Driver Code Ends
