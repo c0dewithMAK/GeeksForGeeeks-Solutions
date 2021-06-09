@@ -1,0 +1,58 @@
+// { Driver Code Starts
+#include<bits/stdc++.h>
+using namespace std;
+
+
+ // } Driver Code Ends
+class Solution{
+  public:
+    vector<int> removeDuplicate(vector<int>& arr, int n)
+    {
+        vector<int> res;
+        if(n==1)
+            return arr;
+        
+        // Take a ordered map
+        unordered_map<int, int> m;
+        // Initially insert the first element into map and res vector both
+        m.insert({arr[0], 0});
+        res.push_back(arr[0]);
+
+        for(int i = 1; i<n; ++i){
+            // First check whether arr[i] is a new element
+            if(m.find(arr[i]) == m.end()){
+                // If it is, insert it into map. Also, insert to res vector to maintain
+                // the order of new element
+                m[arr[i]] = i;
+                res.push_back(arr[i]);
+            }
+            // If arr[i] is already present in map, just keep iterating to next elements
+        }
+        // Finally return the result
+        return res;
+    }
+};
+
+// { Driver Code Starts.
+int main()
+{
+    int T;
+    cin>>T;
+    while(T--)
+    {
+        int N;
+        cin>>N;
+        vector<int> A(N);
+        for(int i=0;i<N;i++)
+        {
+            cin>>A[i];
+        }
+        Solution obj;
+        vector<int>result = obj.removeDuplicate(A,N);
+        for(int i =0;i<result.size();i++)
+            cout<<result[i]<<" ";
+        cout<<endl;
+
+    }
+}
+  // } Driver Code Ends
