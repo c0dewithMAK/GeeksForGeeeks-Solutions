@@ -1,0 +1,91 @@
+// { Driver Code Starts
+#include<bits/stdc++.h>
+using namespace std;
+
+ // } Driver Code Ends
+// Function to return maximum XOR subset in arr[]
+#define MAX_BITS 32
+class Solution
+{
+    public:
+    int maxSubarrayXOR(int arr[], int N)
+    {
+        // In here we apply the GAUSSIAN ELIMINATION TECHNIQUE
+        // Initiale the finalize XOR result variable
+        int res = 0;
+        
+        // Initialize index of chosen elements
+        int index = 0;
+        
+        // Considering we have 32-bit numbers, start from the leftmost MSB bit
+        for(int i = MAX_BITS - 1; i>=0 ; --i){
+            
+            // Take two variables, maxEle => to store the maximum element at each bit level
+            // and maxInd => to store it's index
+            int maxEle = INT_MIN;
+            int maxInd = 0;
+            
+            // Traverse the complete array and find the maximum element who has
+            // ith bit set
+            for(int j = index; j<N; ++j){
+                
+                if( (arr[j] & (1<<i)) && (arr[j] > maxEle) ){
+                    // If i'th bit of arr[j] is set and arr[j] greater than maxEle so far.
+                    maxInd = j;
+                    maxEle = arr[j];
+                }
+            }
+            
+            
+            // If there is no number having ith bit set, continue on to 
+            // the next bit
+            if(maxEle == INT_MIN)
+                continue;
+                
+            // Now we need to swap this maximum element to 'index' position (which starts at 0)
+            swap(arr[index], arr[maxInd]);
+            // Change the indexes as well
+            maxInd = index;
+            
+            // Now traverse the array once again and remove the non-maximum elements
+            // having ith bit set from the required subset
+            for(int j = 0; j<N; ++j){
+                if( (j != maxInd) && (arr[j] & (1<<i)) != 0 )
+                    arr[j] ^= arr[maxInd];
+            }
+            
+            // Increment the 'index' od chosen elements in required subset
+            ++index;
+        }
+        
+        
+        // Finally do the XOR operation for all elements in array to get the result
+        // This is because unnecessary elements have already been reduced to
+        // insignificant values
+        for(int i = 0; i<N; ++i)
+            res ^= arr[i];
+        
+        // Return the maximum XOR
+        return res;
+    }
+};
+
+// { Driver Code Starts.
+int main()
+{
+
+    int t,n,a[100004],k;
+    scanf("%d",&t);
+    while(t--)
+    {
+        //cin>>n;
+       scanf("%d",&n);
+        for(int i=0;i<n;i++)
+        {
+            scanf("%d",&a[i]);
+        }
+        Solution obj;
+        printf("%d\n",obj.maxSubarrayXOR(a,n));
+       // cout<<bin(a,0,n-1,k)<<endl;
+    }
+}  // } Driver Code Ends
