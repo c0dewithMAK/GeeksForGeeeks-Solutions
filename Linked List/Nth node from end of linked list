@@ -1,0 +1,129 @@
+// { Driver Code Starts
+// C program to find n'th Node in linked list
+#include <stdio.h>
+#include <stdlib.h>
+#include<iostream>
+using namespace std;
+
+/* Link list Node */
+struct Node {
+  int data;
+  struct Node *next;
+  Node(int x) {
+    data = x;
+    next = NULL;
+  }
+};
+
+
+/* Function to get the nth node from the last of a linked list*/
+int getNthFromLast(struct Node* head, int n);
+
+
+
+/* Driver program to test above function*/
+int main()
+{
+  int T,i,n,l,k;
+
+    cin>>T;
+
+    while(T--){
+    struct Node *head = NULL,  *tail = NULL;
+
+        cin>>n>>k;
+        int firstdata;
+        cin>>firstdata;
+        head = new Node(firstdata);
+        tail = head;
+        for(i=1;i<n;i++)
+        {
+            cin>>l;
+            tail->next = new Node(l);
+            tail = tail->next;
+        }
+
+    cout<<getNthFromLast(head, k)<<endl;
+    }
+    return 0;
+}// } Driver Code Ends
+
+
+/* struct Node {
+  int data;
+  struct Node *next;
+  Node(int x) {
+    data = x;
+    next = NULL;
+  }
+};
+*/
+
+
+// First approach
+int normalWay(Node *head, int n){
+    
+    Node *curr = head;
+    int len = 0;
+    while(curr){
+        ++len;
+        curr = curr->next;
+    }
+    
+    if(n > len)
+        return -1;
+    
+    curr = head;
+    if(len-n == 0)
+        return head->data;
+    int start = len-n;
+    while(start-- && curr->next){
+        curr = curr->next;
+    }
+    
+    return curr->data;
+}
+
+// Second Approach
+int singleTraversal(Node *head, int n){
+    
+    // Take two pointers first and second
+    Node *first = head, *second = head;
+    
+    // Advance the first pointer while n becomes 0
+    while(n>=1 && first){
+        --n;
+        first = first->next;
+    }
+    
+    if(n > 0)
+        // This means n was > than length of list
+        return -1;
+        
+    if(n == 0 && !first)
+        // This means n == length of list
+        return head->data;
+    
+    // When below loop finishes, second will be pointing to the nth node from last
+    while(first){
+        first = first->next;
+        second = second->next;
+    }
+        
+    return second->data;
+}
+
+//Function to find the data of nth node from the end of a linked list.
+int getNthFromLast(Node *head, int n)
+{
+    if(!head)
+        return -1;
+    
+    // Normal way
+    //return normalWay(head, n);
+    
+    // Single Traversal Way
+    return singleTraversal(head, n);
+    
+}
+
