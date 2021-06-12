@@ -1,0 +1,79 @@
+// { Driver Code Starts
+#include<bits/stdc++.h>
+using namespace std;
+
+ // } Driver Code Ends
+
+
+
+class Solution
+{
+    public:
+    //Function to return Breadth First Traversal of given graph.
+	vector<int> bfsOfGraph(int V, vector<int> adj[])
+	{
+	    // Initialize the visited[] array to false
+	    // This denotes whether a particular vertex has been traversed
+	    bool visited[V] = {false};
+	    
+	    // Result vector
+	    vector<int> bfsRes;
+	    
+	    // Iterator pointer to traverse the adjacency list of ith node
+	    vector<int>::iterator i;
+	    
+	    // This queue stores nodes at one particular level at a time
+	    queue<int> q;
+	    // Starting from node 0
+	    q.push(0);
+	    
+	    while(!q.empty()){
+	        
+	        int f = q.front();
+	        bfsRes.push_back(f);
+	        q.pop();
+	        
+	        for( i = adj[f].begin(); i != adj[f].end(); ++i){
+	            
+	            if(!visited[*i]){
+	                // If node i in adjacency list of f has not yet been traversed
+	                visited[*i] = true;
+	                // Push node i also to the end of the queue
+	                q.push(*i);
+	            }
+	        }
+	    }
+	    
+	    return bfsRes;
+	    
+	}
+};
+
+// { Driver Code Starts.
+int main(){
+	int tc;
+	cin >> tc;
+	while(tc--){
+		int V, E;
+    	cin >> V >> E;
+
+    	vector<int> adj[V];
+
+    	for(int i = 0; i < E; i++)
+    	{
+    		int u, v;
+    		cin >> u >> v;
+    		adj[u].push_back(v);
+    // 		adj[v].push_back(u);
+    	}
+        // string s1;
+        // cin>>s1;
+        Solution obj;
+        vector<int>ans=obj.bfsOfGraph(V, adj);
+        for(int i=0;i<ans.size();i++){
+        	cout<<ans[i]<<" ";
+        }
+        cout<<endl;
+	}
+	return 0;
+}  // } Driver Code Ends
