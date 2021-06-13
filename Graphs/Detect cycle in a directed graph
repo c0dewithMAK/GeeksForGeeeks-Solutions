@@ -1,0 +1,79 @@
+// { Driver Code Starts
+#include<bits/stdc++.h>
+using namespace std;
+
+ // } Driver Code Ends
+
+
+
+class Solution
+{
+    public:
+    
+    // Utility function for recursive DFS traversal
+    bool isCyclicUtil(int v, auto& visited, auto& recurStack, auto& adj){
+        // Mark the current node as visited and part of recursion stack
+        visited[v] = true;
+        recurStack[v] = true;
+        
+        for(auto i : adj[v]){
+            // Recur for all the vertices adjacent to this vertex
+            if(!visited[i] && isCyclicUtil(i, visited, recurStack, adj)){
+                return true;
+            }
+            else if(recurStack[i]){
+                return true;
+            }
+        }
+        // Remove the vertex from recursion stack
+        recurStack[v] = false;
+        return false;
+    }
+    
+	//Function to detect cycle in a directed graph.
+	bool isCyclic(int V, vector<int> adj[]) 
+	{
+	   	vector<bool> visited(V, false), recurStack(V, false);
+	   	
+	   	// Call the recursive helper function to detect cycle in different
+        // DFS trees
+	   	for(int i = 0; i<V; ++i){
+	   	    if(!visited[i] && isCyclicUtil(i, visited, recurStack, adj)){
+	   	        return true;
+	   	    }
+	   	}
+	   	return false; 
+
+	}
+};
+
+// { Driver Code Starts.
+
+
+int main()
+{
+    
+    int t;
+    cin >> t;
+    while(t--)
+    {
+    	int V, E;
+    	cin >> V >> E;
+
+    	vector<int> adj[V];
+
+    	for(int i = 0; i < E; i++)
+    	{
+    		int u, v;
+    		cin >> u >> v;
+    		adj[u].push_back(v);
+    	}
+
+    	Solution obj;
+    	cout << obj.isCyclic(V, adj) << "\n";
+    }
+
+    return 0;
+}
+
+  // } Driver Code Ends
