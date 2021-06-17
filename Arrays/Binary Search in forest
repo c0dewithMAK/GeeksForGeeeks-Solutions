@@ -1,0 +1,37 @@
+int find_height(int tree[], int n, int k)
+    {
+        
+        int max = 0;
+        for(int i = 0; i<n; ++i){
+            // Find the maximum value in array
+            if(tree[i] > max)
+                max = tree[i];
+        }
+        
+        int low = 1, high = max;
+        
+        // Concept here is to perform binary search on range[1..max]
+        // and find the appropriate 'mid' element which can be deleted from each array element
+        // to get total sum = k
+        while(low <= high){
+            // Find middle number
+            int mid = (low+high)/2;
+            // Initialize the sum_count which we have to make equal to k
+            int sum_count = 0;
+            
+            for(int i = 0; i<n; ++i){
+                if(tree[i] >= mid)
+                    sum_count += (tree[i]-mid);
+            }
+            
+            if(sum_count == k)
+                return mid; // mid is analogous to 'H' value
+            
+            if(sum_count > k)
+                low = mid+1;
+            else
+                high = mid-1;
+        }
+        // We couldn't find any required 'H' or mid value 
+        return -1;
+    }
