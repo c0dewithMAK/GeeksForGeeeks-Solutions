@@ -1,0 +1,113 @@
+// { Driver Code Starts
+#include<bits/stdc++.h>
+using namespace std;
+
+ // } Driver Code Ends
+
+
+
+class Solution
+{
+	public:
+	
+	// DFS Utility function
+	void dfsUtil(int u, vector<int> adj[], vector<bool>& visited){
+	    
+	    visited[u] = true;
+	    
+	    for(auto v : adj[u]){
+	        if(!visited[v])
+	            dfsUtil(v, adj, visited);
+	    }
+	}
+	
+	// Utility function to fill vertices in the sink->source order
+	void fillOrder(int v, vector<bool>& visited, vector<int> adj[], stack<int>& s){
+	    
+	    visited[v] = true;
+	    for(auto i : adj[v]){
+	        if(!visited[i])
+	            fillOrder(i, visited, adj, s);
+	    }
+	    
+	    // All vertices reachable from v are processed by now, push v
+	    s.push(v);
+	}
+	
+	//Function to find number of strongly connected components in the graph.
+    int kosaraju(int V, vector<int> adj[])
+    {
+        stack<int> s;
+        vector<bool> visited(V, false);
+        // Initialize the count of connected components as 0
+        int count_ConnComp = 0;
+        
+        // Fill vertices in stack according to their finishing times
+        // Perform DFS first time
+        for(int i = 0; i < V; i++)
+            if(visited[i] == false)
+                fillOrder(i, visited, adj, s);
+        
+        // Mark all the vertices as not visited (For second DFS)
+        for(int i = 0; i < V; i++)
+            visited[i] = false;
+               
+        // Create a reversed graph
+        vector<int> adjRev[V];
+        for(int i = 0; i<V; ++i){
+	        
+	        for(auto v : adj[i]){
+	            adjRev[v].push_back(i);
+	        }
+	    }
+	    
+        
+        // Count the components
+        while(!s.empty()){
+            
+            // Pop a vertex from stack
+            int v = s.top();
+
+            // Count strongly connected components (SCC) of the popped vertex
+            if (visited[v] == false)
+            {
+                dfsUtil(v, adjRev, visited);
+                ++count_ConnComp;
+            }
+            s.pop();
+        }
+        
+        return count_ConnComp;
+    }
+};
+
+// { Driver Code Starts.
+
+
+int main()
+{
+    
+    int t;
+    cin >> t;
+    while(t--)
+    {
+    	int V, E;
+    	cin >> V >> E;
+
+    	vector<int> adj[V];
+
+    	for(int i = 0; i < E; i++)
+    	{
+    		int u, v;
+    		cin >> u >> v;
+    		adj[u].push_back(v);
+    	}
+
+    	Solution obj;
+    	cout << obj.kosaraju(V, adj) << "\n";
+    }
+
+    return 0;
+}
+
+  // } Driver Code Ends
