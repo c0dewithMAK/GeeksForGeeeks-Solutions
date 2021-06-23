@@ -1,0 +1,81 @@
+// { Driver Code Starts
+//Initial Template for C++
+
+#include <bits/stdc++.h>
+using namespace std;
+
+
+ // } Driver Code Ends
+//User function Template for C++
+
+class Solution{
+public:
+
+    // Using sorting
+    int sortMethod(int N, int K, vector<int>& arr){
+       // Sort the array in ascending
+       sort(arr.begin(), arr.end());
+        
+        int maxToys = 0;
+        int maxSum = 0;
+        
+        for(int i = 0; i<N; ++i){
+            if((maxSum+arr[i]) > K)
+                break;
+            maxSum += arr[i];
+            ++maxToys;
+        }
+        
+        return maxToys; 
+    }
+    
+    // Method 2 : Using Min-Heap or Priority Queue
+    int priorityQueueMethod(int N, int K, vector<int>& arr){
+       // Create a Min Heap to have the lowest element at the highest priority
+       // Hence, it gets popped first everytime
+       priority_queue<int, vector<int>, greater<int>> pq;
+        
+        int maxToys = 0;
+        int maxSum = 0;
+        
+        for(int i = 0; i<N; ++i){
+            pq.push(arr[i]);
+        }
+        
+        while(!pq.empty() && (maxSum+pq.top()) <= K){
+            maxSum += pq.top();
+            ++maxToys;
+            pq.pop();
+        }
+        
+        return maxToys; 
+    }
+    
+    int toyCount(int N, int K, vector<int> arr)
+    {
+        // Easiest method is to sort the array
+        // return (sortMethod(N, K, arr));
+        
+        // Method 2 is to use priority_queue
+        return priorityQueueMethod(N, K, arr);
+        
+    }
+};
+
+// { Driver Code Starts.
+
+int main(){
+    int t;
+    cin>>t;
+    while(t--){
+        int N, K;
+        cin>>N>>K;
+        vector<int> arr(N);
+        for(int i = 0;i < N;i++)
+            cin>>arr[i];
+        
+        Solution ob;
+        cout<<ob.toyCount(N, K, arr)<<endl;
+    }
+    return 0;
+}  // } Driver Code Ends
