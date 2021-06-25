@@ -1,0 +1,136 @@
+// { Driver Code Starts
+#include <stdio.h>
+#include <stdlib.h>
+#include <iostream>
+#include <stack>
+using namespace std;
+/* Link list Node */
+struct Node {
+  int data;
+  struct Node *next;
+  Node(int x) {
+    data = x;
+    next = NULL;
+  }
+};
+
+
+
+
+ // } Driver Code Ends
+/*
+struct Node {
+  int data;
+  struct Node *next;
+  Node(int x) {
+    data = x;
+    next = NULL;
+  }
+};
+*/
+
+class Solution{
+  public:
+    //Function to check whether the list is palindrome.
+    bool isPalindrome(Node *head)
+    {
+        int len = 0;
+        Node *curr = head;
+        while(curr){
+            ++len;
+            curr = curr->next;
+        }
+        
+        if(len == 0)
+            return true;
+        if(len == 1)
+            return true;
+            
+        // Get the middle element
+        Node *mid = NULL;
+        Node *prev = NULL;
+        curr = head;
+        int temp_len = len/2;
+        while(temp_len-- > 0){
+            prev = curr;
+            curr = curr->next;
+        }
+        mid = curr;
+        if(len%2 != 0){
+            // Odd Case
+            mid = mid->next;
+            prev->next->next = NULL; // Breaking the list from a node prior to mid node
+        }
+        else{
+            // Even Case
+            // Here we don't advance the mid node
+            prev->next = NULL;
+        }
+        
+        // Now, mid is the head node for the second half of the LL
+        // Let's reverse this second half
+        Node *prev_last = NULL;
+        Node *last = mid;
+        while(last){
+            prev_last = last;
+            last = last->next;
+        }
+        last = prev_last;
+        
+        temp_len = len/2 -1;
+        while(temp_len--){
+            Node *temp = mid;
+            mid = mid->next;
+            temp->next = NULL;
+            last->next = temp;
+            last = temp;
+        }
+        
+        
+        // Now starting comparing the two halves
+        // For LL to be palindrome, first half and reversed second half should be same
+        Node *curr1 = head;
+        Node *curr2 = mid;
+        
+        while(curr1 && curr2){
+            if(curr1->data != curr2->data)
+                return false;
+                
+            curr1 = curr1->next;
+            curr2 = curr2->next;
+        }
+        return true;
+    }
+};
+
+
+
+// { Driver Code Starts.
+/* Driver program to test above function*/
+int main()
+{
+  int T,i,n,l,firstdata;
+    cin>>T;
+    while(T--)
+    {
+        
+        struct Node *head = NULL,  *tail = NULL;
+        cin>>n;
+        // taking first data of LL
+        cin>>firstdata;
+        head = new Node(firstdata);
+        tail = head;
+        // taking remaining data of LL
+        for(i=1;i<n;i++)
+        {
+            cin>>l;
+            tail->next = new Node(l);
+            tail = tail->next;
+        }
+    Solution obj;
+   	cout<<obj.isPalindrome(head)<<endl;
+    }
+    return 0;
+}
+
+  // } Driver Code Ends
