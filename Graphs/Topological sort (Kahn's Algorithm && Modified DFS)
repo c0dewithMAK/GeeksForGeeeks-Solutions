@@ -9,10 +9,10 @@ using namespace std;
 class Solution
 {
 	public:
-	//Function to return list containing vertices in Topological order. 
-	vector<int> topoSort(int V, vector<int> adj[]) 
-	{
-	    vector<int> res; // Our result vector containing the topological ordering of nodes
+	
+	// Method 1: Using Kahn's Algorithm of indegree method
+	// Better method than method 2 as it checks for cycle presence as well in O(V+E)
+	void usingKahnAlgo(int V, vector<int> adj[], vector<int>& res){
 	    vector<int> indeg(V, 0);
 
 	    // Create the in-degree vector from adjacency list given
@@ -22,6 +22,8 @@ class Solution
 	            ++indeg[j];
 	        }
 	    }
+	    // Create a count variable that keeps track of the vertices explored/visited
+	    int count = 0;
 	    // Create a queue that stores only those verticed who has indegree 0
 	    queue<int> zeroIndegNodes;
 	    for(int i = 0; i<V; ++i){
@@ -43,7 +45,56 @@ class Solution
 	                // reduced to 0
 	                zeroIndegNodes.push(i);
 	        }
+	        
+	        // Increment the count for a new incoming vertex with indegree 0
+	        ++count;
 	    }
+	    
+	    // The following lines of code tell us whether there is any cycle in the graph or not
+	    // if(count != V){
+	    //    cout << "THERE IS A CYCLE IN GRAPH" !;
+	    // }
+	    
+	}
+	
+	// Method 2: Using Modified DFS 
+	void dfsUtilTopOrder(int u, vector<int> adj[], vector<bool>& visited, stack<int>& s){
+	    
+	    visited[u] = true;
+	    for(int v : adj[u]){
+	        if(!visited[v]){
+	            dfsUtilTopOrder(v, adj, visited, s);
+	        }
+	    }
+	    s.push(u);
+	}
+	// Note: This method blindly assumes that the graph is DAG and doesn't checks for cyclicity
+	void usingModifiedDFS(int V, vector<int> adj[], vector<int>& res){
+	    
+	    vector<bool> visited(V, false);
+	    stack<int> revOrder;
+	    for(int i = 0; i<V; ++i){
+	        if(!visited[i]){
+	            dfsUtilTopOrder(i, adj, visited, revOrder);
+	        }
+	    }
+	    
+	    // Let's construct our result vector now
+	    while(!revOrder.empty()){
+	        res.push_back(revOrder.top());
+	        revOrder.pop();
+	    }
+	}
+	
+	//Function to return list containing vertices in Topological order. 
+	vector<int> topoSort(int V, vector<int> adj[]) 
+	{
+	    vector<int> res; // Our result vector containing the topological ordering of nodes
+	    // Using Kahn's Algorithm (A better method actually)
+	    // usingKahnAlgo(V, adj, res);
+	    
+	    // Method 2: Using Modified DFS - Time : O(V+E)
+	    usingModifiedDFS(V, adj, res);
 
 	    return res;
 	}
