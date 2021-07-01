@@ -1,0 +1,154 @@
+// { Driver Code Starts
+#include<bits/stdc++.h>
+using namespace std;
+
+ // } Driver Code Ends
+
+
+
+class Solution
+{
+	public:
+	
+	// Custom comparator that compares first elements of two rows
+	static bool myComp(vector<int> &row1, vector<int>& row2){
+	    return row1[0] < row2[0];
+	}
+	
+	// Function to perform DF traversal using Trajan's ALgorithm
+	void dfsUtil(int u, vector<int>& disc, vector<int>& low, stack<int>& dfsStack,
+	                vector<bool>& presentInStack, vector<int> adj[], 
+	                vector<vector<int>>& scc)
+	{
+	    // A static variable to keep track of time
+	    static int time = 0;
+	    disc[u] = low[u] = time;
+	    time += 1;
+	    dfsStack.push(u);
+	    presentInStack[u] = true;
+	    
+	    for(int v : adj[u]){
+	        
+	        if(disc[v] == -1){
+	            // If v is unvisited/undiscovered yet, perform DFT on this first
+	            dfsUtil(v, disc, low, dfsStack, presentInStack, adj, scc);
+	            // After backtracking, update the low value of current node 'u'
+	            low[u] = min(low[u], low[v]); 
+	            
+	        }
+	        // Now, differentiate between a back-edge and cross-edge as below
+	        else if(presentInStack[v]){
+	            // Coming here means v has already been discovered before
+	            // This means it's a back-edge, u->v is a back-edge
+	            low[u] = min(low[u], disc[v]);
+	            
+	        }
+	        // We ignore cross-edges where presentInStack[v]==false
+	    }
+	    
+	    // Now below lines execute when backtracking happens and all adjacent nodes to u
+	    // have been discovered
+	    
+	    // Check for u to be as head-node of the current SCC component
+	    if(low[u] == disc[u]){
+	        vector<int> currentScc; // Temporary array to store elements of current SCC found
+	        // Yes, u is the head of current SCC
+	        // Pop the stack elements till top becomes u
+	        while(dfsStack.top() != u){
+	            currentScc.push_back(dfsStack.top());
+	            presentInStack[dfsStack.top()] = false;
+	            dfsStack.pop();
+	        }
+	        // then pop u also.
+	        // Push the head node of SCC as well
+	        currentScc.push_back(dfsStack.top());
+	        presentInStack[dfsStack.top()] = false;
+	        dfsStack.pop();
+	        // Append this temp array to parent scc
+	        scc.push_back(currentScc);
+	    }
+	    // If u is not a headnode for a SCC simply backtrack to parent of u
+	}
+	
+	
+    //Function to return a list of lists of integers denoting the members 
+    //of strongly connected components in the given graph.
+    vector<vector<int>> tarjans(int V, vector<int> adj[])
+    {
+        // Time Complexity : O(V+E) as all nodes and vertices are visited only once
+        vector<vector<int>> scc;
+        
+        int numOfSCC = 0; // This helps in filling scc above by traversing rows of above scc
+        
+        vector<int> disc(V, -1), low(V, -1);
+        
+        // Below array has true for elements currently present in dfsStack and false otherwise
+        // Used to avoid cross-edges
+        vector<bool> presentInStack(V, false);
+        
+        // A stack that keeps track of elements in current DFS call
+        stack<int> dfsStack;
+        
+        for(int i =0; i<V; ++i){
+            if(disc[i] == -1){
+                dfsUtil(i, disc, low, dfsStack, presentInStack, adj, scc);
+            }
+        }
+        
+        // Now, we need to sort the elements in each SCCs in ascending order
+        // and then we need to sort all the SCCs also according to their first element
+        for(vector<int>& currentScc : scc){
+            // By default sort in ascending order
+            sort(currentScc.begin(), currentScc.end());
+        }
+        // Now sort the rows as well depending on the first element of each row
+        // using custom comparator function
+        sort(scc.begin(), scc.end(), myComp);
+        
+        return scc;
+    }
+};
+
+// { Driver Code Starts.
+
+
+int main()
+{
+    
+    int t;
+    cin >> t;
+    while(t--)
+    {
+        int V, E;
+        cin >> V >> E;
+
+        vector<int> adj[V];
+
+        for(int i = 0; i < E; i++)
+        {
+            int u, v;
+            cin >> u >> v;
+            adj[u].push_back(v);
+        }
+
+        Solution obj;
+        vector<vector<int>> ptr = obj.tarjans(V, adj);
+
+        for(int i=0; i<ptr.size(); i++)
+        {
+            for(int j=0; j<ptr[i].size(); j++)
+            {
+                if(j==ptr[i].size()-1)
+                    cout<<ptr[i][j];
+                else
+                    cout<<ptr[i][j]<<" ";
+            }
+            cout<<',';
+        }
+        cout<<endl;
+    }
+
+    return 0;
+}
+
+  // } Driver Code Ends
