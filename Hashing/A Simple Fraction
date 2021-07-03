@@ -1,0 +1,107 @@
+// { Driver Code Starts
+#include<bits/stdc++.h>
+using namespace std;
+
+ // } Driver Code Ends
+class Solution{
+	public:
+	string fractionToDecimal(int numerator, int denominator) {
+	    string res;
+	    
+	    /* My first method which gives TLE error
+	    if(numerator % denominator == 0){
+	        res = to_string((int)(numerator/denominator)) + ".0";
+	        return res;
+	    }
+	    
+	    int newNumerator = ((numerator % denominator) * 10);
+	    bool recurring = true;
+	    if(numerator < denominator){
+	        res += "0.";
+	    }
+	    else{
+
+	        res += to_string((int)(numerator/denominator));
+	    }
+	    string recurringPart;
+	        
+	    int remainder = newNumerator % denominator;
+	    // Now keep dividing newNumerator by denominator until we get a 0 or 
+	    // same digits start repeating themselves
+	    newNumerator = remainder * 10;
+	    recurringPart += to_string((int)(newNumerator / denominator));
+	    while(1){
+            int tempRemainder = newNumerator % denominator;
+            
+            if(tempRemainder == 0){
+	            recurring = false;
+	            recurringPart += to_string((int)(newNumerator / denominator));
+	            break;
+	        }
+	        else if(tempRemainder == remainder){
+	            break;
+	        }
+
+	        recurringPart += to_string((int)(newNumerator / denominator));
+	        newNumerator = tempRemainder * 10;
+
+	    }
+	    if(recurring){
+	        res += "(" + recurringPart + ")";
+	    }
+	    else
+            res += recurringPart; 
+    
+        return res;*/
+        
+        
+        // Second method - Much more efficient but some space consuming
+        if(numerator%denominator==0)
+            return to_string(numerator/denominator);
+            
+        string s;
+        
+        // This map is used here basically to cache these values
+        // key - current remainder
+        // value - length of quotient upto this remainder
+        map<int,int>m;
+        
+        int rem = numerator % denominator;
+        string integerPart = to_string(numerator/denominator);
+        while(rem!=0 && m.find(rem)==m.end())
+        {
+            // Store the length of quotient upto current division
+            m[rem] = s.length();
+            // Multiply rem by 10 for successive division 
+            rem = rem * 10;
+            // Keep concatenating the actual quotient values at each step
+            s += to_string(rem/denominator);
+            // Successive division, finding remainder
+            rem = rem % denominator;
+        }
+        
+        if(rem == 0)
+            // This is the case when a non-recurring fraction is the output
+            return integerPart+"."+s;
+        else
+        {
+            // Case of recurring fraction, hence the below brackets
+            return integerPart + "." + s.substr(0,m[rem]) + "(" + s.substr(m[rem]) + ")";
+        }
+    }
+
+};
+
+// { Driver Code Starts.
+int main(){
+	int tc;
+	cin >> tc;
+	while(tc--){
+		int numerator, denominator;
+		cin >> numerator >> denominator;
+		Solution ob;
+		string ans = ob.fractionToDecimal(numerator, denominator);
+		cout << ans <<"\n";
+	}
+	return 0;
+}  // } Driver Code Ends
