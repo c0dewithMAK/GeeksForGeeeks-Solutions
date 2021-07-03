@@ -1,0 +1,61 @@
+class Solution {
+  public:
+  
+    void dfsUtil(int u, vector<int>&disc, vector<int>& low, vector<vector<int>> adj,
+                    vector<bool>& presentInCurrDfs, int& countProvinces){
+        
+        static int time = 0;
+        disc[u] = low[u] = time;
+        ++time;
+        // Marking the current node (u+1) as present in current dfs call
+        presentInCurrDfs[u] = true;
+        
+        for(int v = 0; v < adj[u].size(); ++v){
+            if( adj[u][v]!=0 && u!=v){
+                // u!=v check is needed to avoid unnecessary recursive calls from back-edges
+                // where nodes (u+1) and (v+1) have child-parent relation
+                
+                if(disc[v] == -1){
+                    // v+1 is currently undiscovered, perform dfs for it
+                    dfsUtil(v, disc, low, adj, presentInCurrDfs, countProvinces);
+                    
+                    // Update the low value of node (u+1) since any subgraph of node (u+1)
+                    // may have a path to node which has lower discovery values than 
+                    // current node u+1. Hence, we take the minimum
+                    low[u] = min(low[u], low[v]);
+                }
+                else if(presentInCurrDfs[v]){
+                    // This means it's a back-edge, we don't recur for it. We simply update
+                    // low value of node (u+1)
+                    low[u] = min(low[u], disc[v]);
+                }
+            }
+        }
+        
+        if(low[u] == disc[u])
+            // If the current node (u+1) is the head city of the province, simply increment
+            // the count of provinces
+            ++countProvinces;
+    }
+    int numProvinces(vector<vector<int>> adj, int V) {
+        // Here we apply Tarjan's algorithm to find out the number of strongly 
+        // connected components. This is because a province can be considered as
+        // a strongly connected component
+        // This will take O(V+E) time instead of O(V^2) as mentioned in question
+        
+        vector<int> disc(V, -1), low(V, -1); // Discovery times and Low times of each city
+        vector<bool> presentInCurrDfs(V, false);
+        int countProvinces = 0;
+        
+        for(int i = 0; i<V; ++i){
+            // Since there are many provinces so some cities may be disconnected
+            // Hence, we call dfsUtil for each city
+            if(disc[i] == -1){
+                dfsUtil(i, disc, low, adj, presentInCurrDfs, countProvinces);
+            }
+        }
+        
+        // Finally return the count of provinces
+        return countProvinces;
+    }
+};
