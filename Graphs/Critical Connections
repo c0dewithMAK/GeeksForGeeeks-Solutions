@@ -1,0 +1,101 @@
+// { Driver Code Starts
+#include<bits/stdc++.h>
+using namespace std;
+
+
+ // } Driver Code Ends
+//User function Template for C++
+
+class Solution {
+public:
+
+    static bool myComp(vector<int>& r1, vector<int>& r2){
+        // Firstly try to sort based on edge u's value
+        if(r1[0] != r2[0])
+            return r1[0] < r2[0];
+        else{
+            // If u is same in both rows, sort according to v's value
+            return r1[1] < r2[1];
+        }    
+        
+    }
+
+    void dfsUtil(int u, vector<int>& disc, vector<int>& low, vector<int> adj[],
+                    vector<int>& parent, vector<vector<int>>& critConn)
+    {
+        static int time = 0;
+        disc[u] = low[u] = time;
+        ++time;
+        
+        for(int v : adj[u]){
+            
+            if(disc[v] == -1){
+                // Undiscovered/Unvisited node v
+                parent[v] = u;
+                dfsUtil(v, disc, low, adj, parent, critConn);
+                
+                // Check whether v has a path to a node which has lower discovery time and
+                // is an ancestor of u, update the low value accordingly
+                low[u] = min(low[u], low[v]);
+                
+                vector<int> temp;
+                if(low[v] > disc[u]){
+                    // Storing the edges in a sorted manner as this is a bridge edge
+                    if(u < v){
+                        temp.push_back(u);
+                        temp.push_back(v);
+                    }
+                    else{
+                        temp.push_back(v);
+                        temp.push_back(u);
+                    }
+                    critConn.push_back(temp);
+                }
+            }
+            else if(parent[u] != v){
+                // This is the case of a back-edge, simply update the low value of u
+                low[u] = min(low[u], disc[v]);
+            }
+        }
+        
+    }
+
+	vector<vector<int>>criticalConnections(int V, vector<int> adj[]){
+	    
+	    // Here we apply Tarjan's algorithm and perform a single graph traversal
+	    vector<vector<int>> critConn;
+	    vector<int> disc(V, -1), low(V, -1), parent(V, -1);
+	    
+	    // Since in question it is mentioned the initial graph is connected, we only need to
+	    // start fom any node and run dfs traversal only once
+	    dfsUtil(0, disc, low, adj, parent, critConn);
+	    
+	    // Now sort the rows which are (u, v) bridge edges
+	    sort(critConn.begin(), critConn.end(), myComp);
+	    return critConn;
+	}
+};
+
+// { Driver Code Starts.
+
+int main(){
+	int tc;
+    cin >> tc;
+    while(tc--){
+        int V, E;
+        cin >> V >> E;
+        vector<int>adj[V];
+        for(int i = 0; i < E; i++){
+            int u, v;
+            cin >> u >> v;
+            adj[u].push_back(v);
+            adj[v].push_back(u);
+        }
+        Solution obj;
+        vector<vector<int>>ans = obj.criticalConnections(V, adj);
+        
+        for(int i=0;i<ans.size();i++)
+            cout<<ans[i][0]<<" "<<ans[i][1]<<endl;
+    }
+	return 0;
+}  // } Driver Code Ends
