@@ -1,0 +1,124 @@
+#include <iostream>
+#include <vector>
+#include <stack>
+using namespace std;
+
+void dfsUtil(int u, vector<int>& disc, vector<int>& low, vector<int>& parent,
+                    vector<int> adj[], vector<bool>& artPoints){
+    
+    static int time = 0;
+    disc[u] = low[u] = ++time;
+    int child = 0;
+    
+    for(int v : adj[u]){
+        if(disc[v] == -1){
+            // Unvisited node
+            parent[v] = u;
+            ++child;
+            dfsUtil(v, disc, low, parent, adj, artPoints);
+            
+            // Check if the subtree rooted with v has a connection to
+            // one of the ancestors of u
+            low[u] = min(low[u], low[v]);
+            
+            // Check for case 1 : 
+            if( parent[u] == -1 && child > 1 ){
+                // Node u is an articulation point, removing which increases number of 
+                // components in graph
+                artPoints[u] = true;
+            }
+            
+            // Check for case 2 :
+            if( parent[u] != -1 && low[v] >= disc[u]){
+                // Node u is an AP + non-root node and low[sub-graph of u] >= disc[u]
+                artPoints[u] = true;
+            }
+        }
+        else if(parent[u] != v){
+            // u->v is a Back-Edge now, so update the low value as below
+            low[u] = min(low[u], disc[v]);
+        }
+    }
+}
+
+void artPointsTarjanAlgo(int V, vector<int> adj[]){
+    vector<int> disc(V, -1), low(V, -1), parent(V, -1);
+    vector<bool> artPoints(V, false);
+    
+    for(int i = 0; i<V; ++i){
+        if(disc[i] == -1){
+            dfsUtil(i, disc, low, parent, adj, artPoints);
+        }
+    }
+    
+    cout << "Articulation Points : ";
+    for(int i = 0; i<V; ++i){
+        if(artPoints[i])
+            cout << i << " ";
+    }
+    
+}
+
+int main() {
+	
+	/* First Graph :
+	int V = 6;
+	vector<int> adj[6];
+	adj[0].push_back(1);
+	adj[1].push_back(0);
+	adj[0].push_back(2);
+	adj[2].push_back(0);
+	adj[0].push_back(3);
+	adj[3].push_back(0);
+	adj[1].push_back(2);
+	adj[2].push_back(1);
+    adj[3].push_back(4);
+    adj[4].push_back(3);
+    adj[3].push_back(5);
+    adj[5].push_back(3);
+    */
+    
+    /* Second Graph
+    int V = 5;
+	vector<int> adj[5];
+    adj[1].push_back(0);
+    adj[0].push_back(2);
+    adj[1].push_back(0);
+    adj[2].push_back(1);
+    adj[0].push_back(3);
+    adj[3].push_back(4);
+    */
+    
+    // Third Graph
+    /*int V = 4;
+	vector<int> adj[5];
+    adj[0].push_back(1);
+    adj[1].push_back(2);
+    adj[2].push_back(3);
+    */
+    
+    // Fourth Graph
+    int V = 7;
+	vector<int> adj[7];
+    adj[0].push_back(1);
+    adj[1].push_back(0);
+    adj[1].push_back(2);
+    adj[2].push_back(1);
+    adj[2].push_back(0);
+    adj[0].push_back(2);
+    adj[1].push_back(3);
+    adj[3].push_back(1);
+    adj[1].push_back(4);
+    adj[4].push_back(1);
+    adj[1].push_back(6);
+    adj[6].push_back(1);
+    adj[3].push_back(5);
+    adj[5].push_back(3);
+    adj[4].push_back(5);
+    adj[5].push_back(4);
+    
+    
+    artPointsTarjanAlgo(V, adj);
+
+	return 0;
+}
