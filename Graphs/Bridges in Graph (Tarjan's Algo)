@@ -1,0 +1,157 @@
+// { Driver Code Starts
+#include<bits/stdc++.h>
+using namespace std;
+
+ // } Driver Code Ends
+
+
+class Solution
+{
+	public:
+	
+	void dfsUtilTarjanAlgo(int u, vector<int>& disc, vector<int>& low, vector<int> adj[],
+	                     vector<int>& parent, vector<pair<int, int>>& bridges){
+	    
+	    // Initialize the time value only once
+	    static int time = 0;
+	    // Assign them at each dfs call
+	    disc[u] = low[u] = time;
+	    ++time;
+	    
+	    for(int v : adj[u]){
+	        
+	        if(disc[v] == -1){
+	            // v is an undiscovered/unexplored/unvisited node 
+	            parent[v] = u;  // Update the parent of v as u
+	            dfsUtilTarjanAlgo(v, disc, low, adj, parent, bridges); // Then recur for it
+	            
+	            // Check if the subtree rooted with v has a 
+                // connection to one of the ancestors of u, update it's low value
+	            low[u] = min(low[u], low[v]);
+	            
+	            if(low[v] > disc[u])
+	                // If the lowest vertex reachable from subtree 
+                    // under v is below u in DFS tree, then u-v 
+                    // is a bridge, push it to result vector 'bridges'
+	                bridges.push_back({u, v});
+	        }
+	        else if(parent[u] != v){
+	            // Back-Edge case
+	            low[u] = min(low[u], disc[v]);
+	        }
+	        // We ignore the case of child-parent edge and cross-edges
+	    }
+	}
+	
+	int usingTarjanAlgo(int V, vector<int> adj[], int c, int d){
+	    // Below alorithm is the application of Tarjan's Algorithm which traverses the graph
+        // only once and has time complexity : O(V+E)
+        
+        
+        // Initialize vectors for discovery time, lowest-discovery-time-node accessible from
+        // a particular node (low) and parent vector
+        vector<int> disc(V, -1), low(V, -1), parent(V, -1);
+        
+        // Result vector that stores all our bridge edges in graph
+        vector<pair<int, int>> bridges;
+        
+        for(int i = 0; i<V; ++i){
+            // Call for all disconnected/unreachable components as well
+            if(disc[i] == -1)
+                dfsUtilTarjanAlgo(i, disc, low, adj, parent, bridges);
+        }
+        
+        for(auto bridge : bridges){
+            // Check whether our bridges vector contains the required pair (c,d)
+            // Note: we need to check for both the orders (c,d) and (d,c)
+            if( (bridge.first == c && bridge.second == d) || 
+                    (bridge.first == d && bridge.second == c) )
+                return 1;
+        }
+        return 0;
+	}
+    // ---------------------------Method 1 ends here ----------------------------------	
+	
+	void dfsUtil(int u, vector<int> adj[], vector<bool>& visited){
+	    visited[u] = true;
+	    
+	    for(int v : adj[u])
+	    {
+	        if(!visited[v])
+	            dfsUtil(v, adj, visited);
+	    }
+	}
+	// Method 2:
+	int usingEdgeRemovalDFS(int V, vector<int> adj[], int c, int d){
+	   
+	   // Remove the edge c->d first
+	   for(int i = 0; i<adj[c].size(); ++i){
+	       if(adj[c][i] == d){
+	           adj[c].erase(adj[c].begin()+i);
+	           break;
+	       }
+	   }
+	   
+	   // Then remove the edge d->c now
+	   for(int i = 0; i<adj[d].size(); ++i){
+	       if(adj[d][i] == c){
+	           adj[d].erase(adj[d].begin()+i);
+	           break;
+	       }
+	   }
+	   
+	   // Now just perform a simple dfs traversal starting from c
+	   vector<bool> visited(V, false);
+	   dfsUtil(c, adj, visited);
+	   
+	   // Was 'd' visited ??
+	   if(visited[d])
+            return 0;
+        else
+            return 1;
+	   
+	}
+	
+    //Function to find if the given edge is a bridge in graph.
+    int isBridge(int V, vector<int> adj[], int c, int d) 
+    {
+        // Method 1 : Using Tarjan's Algo (O(V+E))
+        // return usingTarjanAlgo(V, adj, c, d);
+        
+        // Method 2 : By removing edge c-d and performing DFS once starting
+        // from c to check whether we cn reach d or not.
+        // Time complexity : O(V+E) here also but it is a little bit faster
+        return usingEdgeRemovalDFS(V, adj, c, d);
+    }
+};
+
+// { Driver Code Starts.
+
+
+int main()
+{
+    int t;
+    cin >> t;
+    while (t--) {
+        int V, E;
+        cin >> V >> E;
+        vector<int> adj[V];
+        int i=0;
+        while (i++<E) {
+            int u, v;
+            cin >> u >> v;
+            adj[u].push_back (v);
+            adj[v].push_back (u);
+        }
+        
+        int c,d;
+        cin>>c>>d;
+        
+        Solution obj;
+    	cout << obj.isBridge(V, adj, c, d) << "\n";
+    }
+
+    return 0;
+}
+
+  // } Driver Code Ends
