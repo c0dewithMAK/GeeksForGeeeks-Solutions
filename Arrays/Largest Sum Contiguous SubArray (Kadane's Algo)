@@ -1,0 +1,70 @@
+// { Driver Code Starts
+#include<bits/stdc++.h>
+using namespace std;
+
+
+ // } Driver Code Ends
+class Solution{
+    public:
+    // arr: input array
+    // n: size of array
+    //Function to find the sum of contiguous subarray with maximum sum.
+    int maxSubarraySum(int arr[], int n){
+        // Modified Kadane's slagorithm, works for both -ve and +ve array elements
+        // This denotes the maximum sum up until the current ith array element
+        int currSum = 0;
+        // This denotes the maximum sum of contigous and largest subarray tarversed so far
+        int maxSum = INT_MIN;
+        
+        int currStart = 0, currEnd = 0, finalStart = 0, finalEnd = 0;
+        for(int i = 0; i<n; ++i){
+            currSum += arr[i];
+            currEnd = i;
+            if( currSum < arr[i] ){
+                // If the current sum of contigous subarray including ith element is lesser 
+                // than arr[i] (ith element), then there is no point in considering the previous
+                // currSum value. Reinitialize the currSum as arr[i]
+                currSum = arr[i];
+                
+                //Reset the indices as well
+                currStart = currEnd = i;
+            }
+            // Now check whether currSum is the maximum of all previous contigous subarray sums
+            if(maxSum < currSum){
+                maxSum = currSum;
+                
+                // Store the indices
+                finalStart = currStart;
+                finalEnd = currEnd;
+            }
+        }
+        // These below are the start and end indices of the subarray with maximum sum
+        //cout << "Start idx = " << finalStart << " , End idx = " << finalEnd << "\n";
+        
+        return maxSum;
+    }
+};
+
+// { Driver Code Starts.
+
+int main()
+{
+    int t,n;
+    
+    cin>>t; //input testcases
+    while(t--) //while testcases exist
+    {
+        
+        cin>>n; //input size of array
+        
+        int a[n];
+        
+        for(int i=0;i<n;i++)
+            cin>>a[i]; //inputting elements of array
+            
+        Solution ob;
+        
+        cout << ob.maxSubarraySum(a, n) << endl;
+    }
+}
+  // } Driver Code Ends
