@@ -1,0 +1,83 @@
+// { Driver Code Starts
+#include<bits/stdc++.h>
+using namespace std;
+
+ // } Driver Code Ends
+
+
+
+class Solution 
+{
+    public:
+    
+    // Global variable which keeps track of number of vertices present/visited in current DFS call
+    // If this becomes equal to V, it will mean we can reach all nodes starting from the current
+    // starting-node in current DFS call
+    int countDfsNodes = 0;
+    
+    void dfsUtil(int u, int V, vector<int> adj[], vector<bool>& visited)
+    {
+        
+        // Mark node 'u' as visited
+        visited[u] = true;
+        // Increment the count as u is now present in the current DFS call
+        ++countDfsNodes;
+        
+        for(int v : adj[u]){
+            
+            if( !visited[v] ){
+                // Make dfs call for v in (u-v) pair only if 'v' is unvisited
+                dfsUtil(v, V, adj, visited);
+
+            }
+
+        }
+        
+    }
+    
+    //Function to find a Mother Vertex in the Graph.
+	int findMotherVertex(int V, vector<int> adj[])
+	{
+	    vector<bool> visited(V, false);
+	    
+	    for(int i = 0; i<V; ++i){
+	        // Maintaining the ordering of mother vertices by calling dfsUtil and passing
+	        // nodes in non-decreasing order
+	        if( !visited[i] ){
+	            
+	            dfsUtil(i, V, adj, visited);
+	            
+	            if(  countDfsNodes == V ){
+	                // If all nodes were visited in this DFS call then i is the mother vertex
+	                return i;
+	            }
+	            // Reset the number of nodes for the next DFS call to 0
+	            countDfsNodes = 0;
+	        }
+	        
+	    }
+	    // Mother vertex not found at all
+	    return -1;
+	}
+
+};
+
+// { Driver Code Starts.
+int main(){
+	int tc;
+	cin >> tc;
+	while(tc--){
+		int V, E;
+		cin >> V >> E;
+		vector<int>adj[V];
+		for(int i = 0; i < E; i++){
+			int u, v;
+			cin >> u >> v;
+			adj[u].push_back(v);
+		}
+		Solution obj;
+		int ans = obj.findMotherVertex(V, adj);
+		cout << ans <<"\n";
+	}
+	return 0;
+}  // } Driver Code Ends
