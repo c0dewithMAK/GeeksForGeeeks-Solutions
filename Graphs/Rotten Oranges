@@ -1,0 +1,158 @@
+// { Driver Code Starts
+#include<bits/stdc++.h>
+using namespace std;
+
+ // } Driver Code Ends
+
+
+class Solution 
+{
+    public:
+    int R;
+    int C;
+    
+    // Utility function to check whether 4-directional moves are valid or not in grid
+    bool isValid(int r, int c, vector<vector<int>>& grid){
+        
+        if( r<0 || r >= R || c < 0 || c >= C){
+            return false;
+        }
+        else if(grid[r][c] == 2 || grid[r][c] == 0)
+            return false;
+
+        return true;
+    }
+    
+    // Utility function to make the oranges rot as and when required
+    void checkRotten(int r, int c, vector<vector<int>>& grid, queue<pair<int, int>>& q,
+                            int& newlyMadeRotten, int& freshRemainingCount)
+    {
+        // Rot the orange horizontally right if possible
+        if(isValid(r, c+1, grid))
+        {
+            --freshRemainingCount;
+            ++newlyMadeRotten;
+            grid[r][c+1] = 2;
+            q.push({r, c+1});
+        }
+        
+        // Rot the orange vertically down if possible
+        if(isValid(r+1, c, grid))
+        {
+            --freshRemainingCount;
+            ++newlyMadeRotten;
+            grid[r+1][c] = 2;
+            q.push({r+1, c});
+        }
+        
+        // Rot the orange horizontally left if possible
+        if(isValid(r, c-1, grid))
+        {
+            --freshRemainingCount;
+            ++newlyMadeRotten;
+            grid[r][c-1] = 2;
+            q.push({r, c-1});
+        }
+        // Rot the orange vertically up if possible
+        if(isValid(r-1, c, grid))
+        {
+            --freshRemainingCount;
+            ++newlyMadeRotten;
+            grid[r-1][c] = 2;
+            q.push({r-1, c});
+        }
+    }
+    
+    //Function to find minimum time required to rot all oranges. 
+    int orangesRotting(vector<vector<int>>& grid) {
+        
+        // We apply BFS here because we need to rot the oranges in breadth-first manner
+        // at each level of processing
+        
+        R = grid.size();
+        C = grid[0].size();
+        queue<pair<int, int>> q;
+        
+        // Keeps track of the total count of fresh remaining oranges in the grid
+        int freshRemainingCount = 0;
+        
+        // Keeps track of the current unprocessed rotten oranges that are going to affect
+        // adjacent oranges
+        int countRotten = 0;
+        
+        // Keeps track of the oranges that were newly made rotten
+        int newlyMadeRotten = 0;
+        
+        for(int r = 0; r < R; ++r){
+            for(int c = 0; c < C; ++c){
+                if(grid[r][c] == 2){
+                    ++countRotten;
+                    // First find all rotten oranges at the first level when timer starts
+                    q.push({r, c});
+                }
+                else if(grid[r][c] == 1)
+                    ++freshRemainingCount;
+            }
+        }
+        
+        // Start the timer now
+        int timer = 0;
+        
+        while(!q.empty() && countRotten > 0){
+            
+            pair<int, int> level = q.front();
+            q.pop();
+            // Decrement the count of rotten oranges whose adjacent oranges have been
+            // made rotten (Means, this level is completed)
+            --countRotten;
+            
+            checkRotten(level.first, level.second, grid, q, newlyMadeRotten,
+                            freshRemainingCount);
+            
+            if(countRotten == 0){
+                // Once the countRotten becomes 0, first level of rot has happened
+                // to the adjacent fresh oranges simultaneously
+                if(newlyMadeRotten == 0)
+                    break;
+                
+                // Re-initialize the currentRotten with the rot count which has happened
+                // at next LEVEL that we will process now
+                countRotten = newlyMadeRotten;
+                // Reset the count of newlyMadeRotten oranges as we will be re-incrementing
+                // it for the next batch
+                newlyMadeRotten = 0;
+                
+                // As such increment the timer only once for this LEVEL of rot process
+                ++timer;
+            }
+                
+            
+        }
+        
+        if(timer == 0 || freshRemainingCount > 0)
+            // If all oranges were initially fresh or some oranges are left unrotten
+            return -1;
+            
+        return timer;
+    }
+};
+
+// { Driver Code Starts.
+int main(){
+	int tc;
+	cin >> tc;
+	while(tc--){
+		int n, m;
+		cin >> n >> m;
+		vector<vector<int>>grid(n, vector<int>(m, -1));
+		for(int i = 0; i < n; i++){
+			for(int j = 0; j < m; j++){
+				cin >> grid[i][j];
+			}
+		}
+		Solution obj;
+		int ans = obj.orangesRotting(grid);
+		cout << ans << "\n";
+	}
+	return 0;
+}  // } Driver Code Ends
