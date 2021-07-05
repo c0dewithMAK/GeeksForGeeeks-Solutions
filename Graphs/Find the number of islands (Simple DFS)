@@ -1,0 +1,121 @@
+// { Driver Code Starts
+#include<bits/stdc++.h>
+using namespace std;
+
+ // } Driver Code Ends
+
+
+class Solution
+{
+    public:
+    int R;
+    int C;
+    
+    // Utility function to check whether the current move being made is valid or not in the grid
+    bool checkValidMove(int r, int c, vector<vector<char>>& grid,
+                            vector<vector<bool>>& visited)
+    {
+        
+        if( r < 0 || r >= R || c < 0 || c >= C )
+        {
+            // Checks the index bounds
+            return false;
+        }
+        else if( grid[r][c] == '0')
+            // We can't move to the cell which represants water
+            return false;
+        else if( grid[r][c] == '1' && visited[r][c] )
+            // We should not move to a land-cell already visited before
+            return false;
+        
+        return true;
+            
+    }
+    
+    // Utility function to perform DFS on the grid[][] matrix
+    void dfsMatrixUtil(int r, int c, vector<vector<char>>& grid, 
+                                vector<vector<bool>>& visited)
+    {
+        visited[r][c] = true;
+        // Adjacency on an element in matrix consists of all the 8 elements
+        // around that element in all 8 directions
+        
+        // Moving horizontally right
+        if(checkValidMove(r, c+1, grid, visited))
+            dfsMatrixUtil(r, c+1, grid, visited);
+        
+        // Moving diagonally-down-right
+        if(checkValidMove(r+1, c+1, grid, visited))
+            dfsMatrixUtil(r+1, c+1, grid, visited);
+        
+        // Moving vertically down
+        if(checkValidMove(r+1, c, grid, visited))
+            dfsMatrixUtil(r+1, c, grid, visited);
+        
+        // Moving diagonally-down-left
+        if(checkValidMove(r+1, c-1, grid, visited))
+            dfsMatrixUtil(r+1, c-1, grid, visited);
+        
+        // Moving horizontaly left   
+        if(checkValidMove(r, c-1, grid, visited))
+            dfsMatrixUtil(r, c-1, grid, visited);
+        
+        // Moving diagonally-up-left
+        if(checkValidMove(r-1, c-1, grid, visited))
+            dfsMatrixUtil(r-1, c-1, grid, visited);
+        
+        // Moving vertically up
+        if(checkValidMove(r-1, c, grid, visited))
+            dfsMatrixUtil(r-1, c, grid, visited);
+        
+        // Moving diagonally-up-right    
+        if(checkValidMove(r-1, c+1, grid, visited))
+            dfsMatrixUtil(r-1, c+1, grid, visited);
+    }
+    
+    //Function to find the number of islands.
+    int numIslands(vector<vector<char>>& grid) 
+    {
+        R = grid.size();
+        C = grid[0].size();
+        
+        // Initialize a visited 2-d array
+        vector<vector<bool>> visited(R, vector<bool>(C, false));
+        
+        int islandCount = 0; // Initialize the count of islands
+        
+        for(int r = 0; r < R; ++r){
+            for(int c = 0; c < C; ++c){
+                if(!visited[r][c] && grid[r][c] == '1')
+                {
+                    // Increment the count of islands whenever when we find any land that is
+                    // unvisited and cannot be reached by a single DFS traversal
+                    ++islandCount;
+                    dfsMatrixUtil(r, c, grid, visited);
+                }
+            }
+        }
+        
+        return islandCount;
+    }
+};
+
+// { Driver Code Starts.
+int main(){
+	int tc;
+	cin >> tc;
+	while(tc--){
+		int n, m;
+		cin >> n >> m;
+		vector<vector<char>>grid(n, vector<char>(m, '#'));
+		for(int i = 0; i < n; i++){
+			for(int j = 0; j < m; j++){
+				cin >> grid[i][j];
+			}
+		}
+		Solution obj;
+		int ans = obj.numIslands(grid);
+		cout << ans <<'\n';
+	}
+	return 0;
+}  // } Driver Code Ends
