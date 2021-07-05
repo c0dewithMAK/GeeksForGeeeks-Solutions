@@ -1,0 +1,104 @@
+// { Driver Code Starts
+#include<bits/stdc++.h>
+using namespace std;
+
+ // } Driver Code Ends
+
+
+
+class Solution
+{
+    public:
+    // Global variables storing the row and column numbers of the 2D grid
+    int R;
+    int C;
+    
+    // Utility function to check whether the move being made currently is valid or not
+    bool isValidMove(int r, int c, vector<vector<int>>& grid, vector<vector<int>>& visited){
+        
+        if( r < 0 || r >= R || c < 0 || c >= C)
+            // Check the grid bounds
+            return false;
+            
+        else if(visited[r][c] == 1)
+            // No need to visit the already visited cell again in current DFS call
+            return false;
+            
+        else if(grid[r][c] == 0 || grid[r][c] == 1)
+            // We can't traverse source cell again (Infinite loop will happen, SEGMENTATION)
+            // Also, we can't cross a blank cell (value 0)
+            return false;
+            
+        return true;
+    }
+    
+    // Utility function for DFS traversal in grid
+    bool dfsUtil(int r, int c, vector<vector<int>>& grid, vector<vector<int>>& visited){
+        
+        // Mark the current cell as visited
+        visited[r][c] = 1;
+        
+        if(grid[r][c] == 2)
+            // If sink is found, return true
+            return true;
+        
+        // Move Horizontally Right ?
+        if(isValidMove(r, c+1, grid, visited) && dfsUtil(r, c+1, grid, visited))
+            return true;
+        
+        // Move Vertically Down ?
+        if(isValidMove(r+1, c, grid, visited) && dfsUtil(r+1, c, grid, visited))
+            return true;
+            
+        // Move Horizontally Left ?
+        if(isValidMove(r, c-1, grid, visited) && dfsUtil(r, c-1, grid, visited))
+            return true;
+            
+        // Move Vertically Up ?
+        if(isValidMove(r-1, c, grid, visited) && dfsUtil(r-1, c, grid, visited))
+            return true;
+            
+        return false;
+    }
+    
+    //Function to find whether a path exists from the source to destination.
+    bool is_Possible(vector<vector<int>>& grid) 
+    {
+        R = grid.size();
+        C = grid[0].size();
+        
+        vector<vector<int>> visited(R, vector<int>(C, 0));
+        
+        bool flag = false; // A flag to break out of the outer loop once source is found
+        
+        // First traverse the grid and locate the source index
+        for(int r = 0; r < R; ++r){
+            for(int c = 0; c < C; ++c){
+                if(grid[r][c] == 1){ // Found the source
+                    // Perform DFS from source to sink and return the true/false value
+                    return dfsUtil(r, c, grid, visited);
+                }
+            }
+        }
+    }
+};
+
+// { Driver Code Starts.
+int main(){
+	int tc;
+	cin >> tc;
+	while(tc--){
+		int n;
+		cin >> n;
+		vector<vector<int>>grid(n, vector<int>(n, -1));
+		for(int i = 0; i < n; i++){
+			for(int j = 0; j < n; j++){
+				cin >> grid[i][j];
+			}
+		}
+		Solution obj;
+		bool ans = obj.is_Possible(grid);
+		cout << ((ans) ? "1\n" : "0\n");
+	}
+	return 0;
+}  // } Driver Code Ends
