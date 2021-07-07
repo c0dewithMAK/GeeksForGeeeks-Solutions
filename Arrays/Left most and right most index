@@ -1,0 +1,68 @@
+// { Driver Code Starts
+#include <bits/stdc++.h>
+using namespace std;
+
+
+ // } Driver Code Ends
+class Solution
+{
+    public:
+    pair<long,long> indexes(vector<long long> arr, long long x)
+    {
+        // Firstly this question cannot be solved in a single binary search
+        // Method 1 :  Perform 2 binary searches and find first index of x and last index of x resp
+        
+        
+        // Method 2 : Use in-built lower_bound and upper_bound functions
+        // Both functions each have a time complexity of O(logn)
+        pair<long, long> res = {-1, -1};
+        
+        auto leftMost = lower_bound(arr.begin(), arr.end(), x);
+        
+        if(leftMost == arr.end() || (*leftMost) != x)
+        {
+            // If all elements are less than x and iterator returns arr.end()
+            // or, if element is not even present in arr
+            return res;
+        }
+        
+        auto rightMost = upper_bound(arr.begin(), arr.end(), x);
+        
+        res.first  = leftMost  - arr.begin();
+        res.second = rightMost - arr.begin() - 1;
+        
+        return res;
+    
+    }
+};
+
+// { Driver Code Starts.
+
+int main()
+ {
+    long long t;
+    cin>>t;
+    while(t--)
+    {
+        long long n, k;
+        vector<long long>v;
+        cin>>n;
+        for(long long i=0;i<n;i++)
+        {
+            cin>>k;
+            v.push_back(k);
+        }
+        long long x;
+        cin>>x;
+        Solution obj;
+        pair<long,long> pair = obj.indexes(v, x);
+        
+        if(pair.first==pair.second and pair.first==-1)
+        cout<< -1 <<endl;
+        else
+        cout<<pair.first<<" "<<pair.second<<endl;
+
+    }
+	return 0;
+}
+  // } Driver Code Ends
