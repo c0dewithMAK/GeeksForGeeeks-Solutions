@@ -1,0 +1,116 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define ALPHABET_SIZE 26
+
+
+struct TrieNode
+{
+    struct TrieNode *children[ALPHABET_SIZE];
+    int valueCount;
+};
+
+struct TrieNode *getNode(){
+    struct TrieNode *pNode = NULL;
+    pNode = (struct TrieNode *)malloc(sizeof(struct TrieNode));
+    if(pNode){
+        pNode->valueCount = 0;
+        for(int i = 0; i<ALPHABET_SIZE; ++i)
+            pNode->children[i] = NULL;
+    }
+    return pNode;
+}
+
+void insert(struct TrieNode *root, string key){
+    
+    struct TrieNode *curr = root;
+    for(int i = 0; i<key.size(); ++i){
+        
+        int idx = key[i] - 'a';
+        if(!curr->children[idx]){
+            curr->children[idx] = getNode();
+        }
+        curr = curr->children[idx];
+    }
+    ++curr->valueCount;
+}
+
+bool isEmpty(struct TrieNode *curr){
+    
+    for(int i = 0; i<ALPHABET_SIZE; ++i){
+        if(curr->children[i])
+            return false;
+    }
+    return true;
+}
+
+// Utility function that searches strings after prefix key is found in trie
+void searchUtil(struct TrieNode *root, int& prefStrCount){
+    
+    if( !root )
+        return;
+        
+    if( root->valueCount > 0 ){
+        prefStrCount += root->valueCount;
+        
+        if(isEmpty(root))
+            return;
+    }
+    
+    for(int i = 0; i<ALPHABET_SIZE; ++i){
+        if(root->children[i])
+            searchUtil(root->children[i], prefStrCount);
+    }
+    
+}
+
+void search(struct TrieNode *root, string prefix, int& prefStrCount){
+    
+    struct TrieNode *curr = root;
+    for(int i = 0; i<prefix.size(); ++i){
+        int idx = prefix[i] - 'a';
+        if(!curr->children[idx]){
+            cout << "Complete prefix '" << prefix << "' itself is not present in the trie !\n";
+            return;
+        }
+        curr = curr->children[idx];
+    }
+    
+    if( curr->valueCount > 0)
+        // We need to count the occurrences of prefix string as well
+        prefStrCount += curr->valueCount;
+    
+    for(int i = 0; i < ALPHABET_SIZE; ++i)
+        if(curr->children[i])
+            searchUtil(curr->children[i], prefStrCount);
+            
+    cout << prefStrCount << " strings exist containing " << prefix << " as prefix\n";
+}
+
+
+int main() {
+	
+	// Input keys (use only 'a' through 'z'
+    // and lower case)
+    string keys[] = { "the", "a", "there",
+                      "answer", "any", "by",
+                      "bye", "their", "hero", "heroplane", "heroplane" };
+    int n = sizeof(keys) / sizeof(keys[0]);
+ 
+    struct TrieNode* root = getNode();
+ 
+    // Construct trie
+    for (int i = 0; i < n; i++)
+        insert(root, keys[i]);
+ 
+    // Search for different keys
+    int prefStrCount = 0;
+    search(root, "the", prefStrCount); 
+    prefStrCount = 0;
+    search(root, "her", prefStrCount);
+    prefStrCount = 0;
+    search(root, "herop", prefStrCount);
+    prefStrCount = 0;
+    search(root, "xem", prefStrCount);
+    
+    return 0;
+}
