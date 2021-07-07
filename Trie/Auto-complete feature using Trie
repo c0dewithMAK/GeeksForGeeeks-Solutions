@@ -1,0 +1,120 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define ALPHABET_SIZE 26
+
+
+struct TrieNode
+{
+    struct TrieNode *children[ALPHABET_SIZE];
+    int valueCount;
+};
+
+struct TrieNode *getNode(){
+    struct TrieNode *pNode = NULL;
+    pNode = (struct TrieNode *)malloc(sizeof(struct TrieNode));
+    if(pNode){
+        pNode->valueCount = 0;
+        for(int i = 0; i<ALPHABET_SIZE; ++i)
+            pNode->children[i] = NULL;
+    }
+    return pNode;
+}
+
+void insert(struct TrieNode *root, string key){
+    
+    struct TrieNode *curr = root;
+    for(int i = 0; i<key.size(); ++i){
+        
+        int idx = key[i] - 'a';
+        if(!curr->children[idx]){
+            curr->children[idx] = getNode();
+        }
+        curr = curr->children[idx];
+    }
+    ++curr->valueCount;
+}
+
+bool isEmpty(struct TrieNode *curr){
+    
+    for(int i = 0; i<ALPHABET_SIZE; ++i){
+        if(curr->children[i])
+            return false;
+    }
+    return true;
+}
+
+// Utility function that prints strings after prefix key is found in trie
+void printUtil(struct TrieNode *root, string key){
+    
+    if( !root )
+        return;
+        
+    if( root->valueCount > 0 ){
+        cout << key << " ";
+        
+        if(isEmpty(root))
+            return;
+    }
+    
+    for(int i = 0; i<ALPHABET_SIZE; ++i){
+        if(root->children[i]){
+            printUtil(root->children[i], (key+(char)(i + 'a')));
+            
+        }
+    }
+    
+}
+
+void print(struct TrieNode *root, string prefix){
+    // Time Complexity : O(n*l) where l = length of longest string in trie chain
+    
+    struct TrieNode *curr = root;
+    for(int i = 0; i<prefix.size(); ++i){
+        int idx = prefix[i] - 'a';
+        if(!curr->children[idx]){
+            cout << "Complete prefix '" << prefix << "' itself is not present in the trie !\n";
+            return;
+        }
+        curr = curr->children[idx];
+    }
+    
+    cout << "For prefix '" << prefix << "', suggestions are - ";
+    if( curr->valueCount > 0)
+        // We need to count the occurrences of prefix string as well
+        cout << prefix << " ";
+    
+    string key = prefix;
+    for(int i = 0; i < ALPHABET_SIZE; ++i)
+        if(curr->children[i]){
+            printUtil(curr->children[i], (key+(char)(i + 'a')));
+        }
+            
+    cout << "\n";
+}
+
+
+int main() {
+	
+	// Input keys (use only 'a' through 'z'
+    // and lower case)
+    string keys[] = { "the", "a", "there",
+                      "answer", "any", "by",
+                      "bye", "their", "hero", "heroplane", "heroplane" };
+    int n = sizeof(keys) / sizeof(keys[0]);
+ 
+    struct TrieNode* root = getNode();
+ 
+    // Construct trie
+    for (int i = 0; i < n; i++)
+        insert(root, keys[i]);
+ 
+    // Auto-complete function for different prefix-keys
+    print(root, "the");
+    print(root, "b");
+    print(root, "byes");
+    print(root, "her");
+    print(root, "herop");
+    print(root, "xem");
+    
+    return 0;
+}
