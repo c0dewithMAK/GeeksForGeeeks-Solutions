@@ -64,7 +64,7 @@ void searchUtil(struct TrieNode *root, int& prefStrCount){
 }
 
 void search(struct TrieNode *root, string prefix, int& prefStrCount){
-    
+    // Time Complexity : O(n*l) where l = length of longest string in trie chain
     struct TrieNode *curr = root;
     for(int i = 0; i<prefix.size(); ++i){
         int idx = prefix[i] - 'a';
