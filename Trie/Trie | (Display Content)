@@ -1,0 +1,112 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define ALPHABET_SIZE 26
+
+
+struct TrieNode
+{
+    struct TrieNode *children[ALPHABET_SIZE];
+    int valueCount;
+};
+
+struct TrieNode *getNode(){
+    struct TrieNode *pNode = NULL;
+    pNode = (struct TrieNode *)malloc(sizeof(struct TrieNode));
+    if(pNode){
+        pNode->valueCount = 0;
+        for(int i = 0; i<ALPHABET_SIZE; ++i)
+            pNode->children[i] = NULL;
+    }
+    return pNode;
+}
+
+void insert(struct TrieNode *root, string key){
+    
+    struct TrieNode *curr = root;
+    for(int i = 0; i<key.size(); ++i){
+        
+        int idx = key[i] - 'a';
+        if(!curr->children[idx]){
+            curr->children[idx] = getNode();
+        }
+        curr = curr->children[idx];
+    }
+    ++curr->valueCount;
+}
+
+bool search(struct TrieNode *root, string key){
+    
+    struct TrieNode *curr = root;
+    for(int i = 0; i<key.size(); ++i){
+        
+        int idx = key[i] - 'a';
+        if(!curr->children[idx]){
+            return false;
+        }
+        curr = curr->children[idx];
+    }
+    return (curr->valueCount > 0);
+}
+
+bool isEmpty(struct TrieNode *curr){
+    
+    for(int i = 0; i<ALPHABET_SIZE; ++i){
+        if(curr->children[i])
+            return false;
+    }
+    return true;
+}
+
+void displayTrie(struct TrieNode *root, string key = ""){
+    
+    // Base Case 1 :
+    if( !root )
+        return;
+    
+    // Basse Case 2 :
+    if( root->valueCount > 0 ){
+        cout << key << " (" << root->valueCount << " times)\n";
+        
+        // If root a proper leaf node then all it's children[i] pointers would be NULL
+        if( isEmpty(root) ) // simply return
+            return;
+    }
+    
+    for(int i = 0; i<ALPHABET_SIZE; ++i){
+        if(root->children[i]){
+            key += (char)('a'+i);
+            displayTrie(root->children[i], key);
+            key.pop_back();
+        }
+    }
+}
+
+int main() {
+	
+	// Input keys (use only 'a' through 'z'
+    // and lower case)
+    string keys[] = { "the", "a", "there",
+                      "answer", "any", "by",
+                      "bye", "their", "hero", "heroplane", "heroplane" };
+    int n = sizeof(keys) / sizeof(keys[0]);
+ 
+    struct TrieNode* root = getNode();
+ 
+    // Construct trie
+    for (int i = 0; i < n; i++)
+        insert(root, keys[i]);
+ 
+    // Search for different keys
+    //search(root, "the") ? cout << "Yes\n" : cout << "No\n";
+    //search(root, "these") ? cout << "Yes\n" : cout << "No\n";
+ 
+    //remove(root, "heroplane");
+    //search(root, "heroplane") ? cout << "Yes\n" : cout << "No\n";
+    //remove(root, "heroplane");
+    //search(root, "heroplane") ? cout << "Yes\n" : cout << "No\n";
+    //search(root, "hero") ? cout << "Yes\n" : cout << "No\n";
+    //string allKeys;
+    displayTrie(root);
+    
+    return 0;
+}
