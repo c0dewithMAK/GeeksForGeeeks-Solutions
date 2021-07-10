@@ -1,0 +1,103 @@
+// { Driver Code Starts
+//Initial template for C++
+
+#include<bits/stdc++.h> 
+using namespace std; 
+
+ // } Driver Code Ends
+//User function Template for C++
+#define COUNT 2
+#define MAX_SIZE 32
+
+class Solution{   
+public:
+    struct TrieNode{
+        struct TrieNode* children[COUNT];
+        // This, when contains the number itself when leafValue if of the last bit node
+        int leafValue; 
+    };
+    typedef struct TrieNode TrieNode;
+
+    TrieNode* getNode(){
+        TrieNode *pNode = NULL;
+        pNode = (TrieNode *)malloc(sizeof(TrieNode));
+        if(pNode){
+            // Since in current case we know only 2 children are there, 0 and 1
+            pNode->children[0] = pNode->children[1] = NULL;
+        }
+        else{
+            cout << "\nMemory Allocation Failed !! Returning NULL !!";
+        }
+        return pNode;
+    }
+
+    void insert(TrieNode *root, int key){
+        TrieNode *curr = root;
+        for(int i = MAX_SIZE-1; i>=0 ; --i){ // Loop from MSB to LSB bit positions
+            
+            bool currBit = key&(1<<i);    // Extract the bit
+            // currBit = true if key&(1<<i) gives a non-zero number. False otherwise
+            
+            if( !curr->children[currBit] )
+                curr->children[currBit] = getNode();
+            curr = curr->children[currBit];
+        }
+        curr->leafValue = key; // Store the number itself at the leaf node location in leafValue
+    }
+    
+    // Utility function to calculate xor of each pair on-the-go
+    int minxorpairUtil(TrieNode *root, int key){
+        TrieNode *curr = root;
+        for(int i = MAX_SIZE-1; i>=0; --i){
+            // In this loop we basically find the first set bit from LSB
+            
+            bool currBit = key & (1<<i);
+            
+            if(curr->children[currBit])
+                curr = curr->children[currBit];
+            else if(curr->children[1 - currBit])
+                curr = curr->children[1 - currBit];
+        }
+        // We are at the leaf bit node of key
+        // Now simple xor key with minimum set-bit element
+        return key^curr->leafValue;
+    }
+
+    int minxorpair(int N, int arr[]){    
+        int minXorVal = INT_MAX;
+        TrieNode *root = getNode(); // First init the root node
+        
+        // First time insert 0th array element in trie
+        insert(root, arr[0]);
+        // Now run loop from 1st element till n-1th and insert them by first finding xor
+        for(int i = 1; i<N; ++i){
+            // First find the minimum value wrt to current ith array element
+            minXorVal = min( minXorVal, minxorpairUtil( root, arr[i]) );
+            // Now simply insert arr[i] also into trie
+            insert(root, arr[i]);
+        }
+        
+        return minXorVal;
+    }
+};
+
+// { Driver Code Starts.
+int main() 
+{ 
+    int t;
+    cin>>t;
+    while(t--)
+    {
+        int N, X;
+        cin >> N;
+        int arr[N];
+        for(int i = 0; i < N; i++){
+            cin >> arr[i];
+        }
+
+        Solution ob;
+        cout << ob.minxorpair(N, arr) << endl;
+    }
+    return 0; 
+} 
+  // } Driver Code Ends
