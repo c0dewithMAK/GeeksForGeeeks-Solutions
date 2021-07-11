@@ -1,0 +1,52 @@
+// { Driver Code Starts
+#include<bits/stdc++.h>
+using namespace std;
+
+ // } Driver Code Ends
+class Solution{
+    public:
+    // your task is to complete this function
+    int maxDistance(int arr[], int n)
+    {
+        if(n == 1)
+            return 0;
+    
+        map<int, pair<int, int>> m;
+        int maxDist = INT_MIN;
+
+        for(int i = 0; i < n; ++i){
+            if( m.find(arr[i]) == m.end() ){
+                // Element is not yet present, first occurrence
+                m[arr[i]] = {i, -1};
+            }
+            else{
+                // Element is repeated, store it's final furthest location that is 'i'
+                m[arr[i]].second = i;
+                maxDist = max( maxDist, m[arr[i]].second - m[arr[i]].first);
+            }
+        }
+        
+        if( maxDist == INT_MIN )
+            return 0;
+        return maxDist;
+    }
+};
+
+// { Driver Code Starts.
+
+int main()
+{
+    int t;
+    cin>>t;
+    while(t--)
+    {
+        int n;
+        cin>>n;
+        int arr[n];
+        for(int i=0; i<n; i++)
+            cin>>arr[i];
+        Solution ob;
+        cout<<ob.maxDistance(arr,n)<<endl;
+    }
+    return 0;
+}  // } Driver Code Ends
