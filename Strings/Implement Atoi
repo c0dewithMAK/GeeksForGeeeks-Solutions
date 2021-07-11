@@ -1,0 +1,54 @@
+// { Driver Code Starts
+ #include <bits/stdc++.h>
+using namespace std;
+
+ // } Driver Code Ends
+class Solution{
+    public:
+        /*You are required to complete this method */
+    int atoi(string str)
+    {
+        if( str.empty() ) // Base Case, number should not be empty
+            return -1;
+        
+        int len = str.size();
+        
+        // If input number is negative but only '-'' minus sign is input
+        if( str[0] == '-' && len==1)
+            return -1;
+        
+        // If input number is negative, skip the 0th character in loop
+        if( str[0] == '-'){
+            for(int i = 1; i<len; ++i){
+            
+            if( !(str[i] >= '0' && str[i] <= '9') )
+                return -1;
+            }
+        }
+        else{
+            for(int i = 0; i<len; ++i){
+            
+            if( !(str[i] >= '0' && str[i] <= '9') )
+                return -1;
+            }
+        }
+        stringstream ss(str); // Create a stringstream object from the string
+        int res;              // Resultant integer number
+        ss >> res;
+        return res;
+    }
+};
+
+// { Driver Code Starts.
+int main()
+{
+	int t;
+	cin>>t;
+	while(t--)
+	{
+		string s;
+		cin>>s;
+		Solution ob;
+		cout<<ob.atoi(s)<<endl;
+	}
+}  // } Driver Code Ends
