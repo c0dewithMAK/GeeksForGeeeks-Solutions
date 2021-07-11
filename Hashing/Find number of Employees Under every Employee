@@ -1,0 +1,76 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+    void dfsUtil(string currEmp, map<string, vector<string>> adj, map<string, int>& resMap){
+        
+        if( adj.find(currEmp) == adj.end() ){
+            resMap[currEmp] = 0;
+            return;
+        }
+        
+        vector<string> subOrd = adj[currEmp];
+        for( int i = 0; i < subOrd.size(); ++i){
+            dfsUtil(subOrd[i], adj, resMap);
+            resMap[currEmp] += resMap[subOrd[i]] + 1;
+        }
+    }
+    
+
+string populateResult(map<string, string> m){
+    
+    // First let's construct the adjacency list for employees directly reporting
+    // to a particular other employee
+    map<string, vector<string>> adj;
+    map<string, int> resMap; // Stores {employee_name, subordinates_count}
+    int countCeo = 0;        // This should be at max 1
+    string res;              // Used to create the final output string
+    string ceo;              // CEO name
+    for( auto itr = m.begin(); itr != m.end(); ++itr){
+        if( itr->first == itr->second){
+            ++countCeo;
+            if( countCeo > 1 )
+                return "Invalid input as there are 2 CEOs !";
+            ceo = itr->first;
+            continue;
+        }
+        adj[itr->second].push_back(itr->first);
+    }
+    
+    
+    // Start DFS traversal from ceo himself
+    dfsUtil(ceo, adj, resMap);
+    
+    // Create the resultant string
+    for( auto itr = resMap.begin(); itr != resMap.end(); ++itr){
+        res += itr->first + " : " + to_string(itr->second) + "\n";
+    }
+    return res;
+}
+
+int main() {
+    
+	map<string, string> dataSet;
+    /*dataSet["A"] = "C";
+    dataSet["B"] = "C";
+    dataSet["C"] = "F";
+    dataSet["D"] = "E";
+    dataSet["E"] = "F";
+    dataSet["F"] = "F";*/
+    
+    dataSet["B"] = "A";
+    dataSet["C"] = "B";
+    dataSet["D"] = "C";
+    dataSet["E"] = "D";
+    dataSet["F"] = "D";
+    dataSet["G"] = "D";
+    dataSet["G"] = "D";
+    dataSet["H"] = "G";
+    dataSet["I"] = "H";
+    dataSet["J"] = "H";
+    dataSet["A"] = "A";
+    
+    string res;
+    res = populateResult(dataSet);
+    cout << res;
+	return 0;
+}
