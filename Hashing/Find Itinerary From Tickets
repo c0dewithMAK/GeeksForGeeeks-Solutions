@@ -1,0 +1,67 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+void printItinerary(map<string, string> itn){
+    string res;
+    
+    map<string, int> m;
+    map<string, string>::iterator itr;
+    for(itr = itn.begin(); itr != itn.end(); ++itr){
+        string key = itr->first;
+        string value = itr->second;
+        //cout << "\nKey - " << key << ", Value - " << value;
+        if( m.find(key) == m.end() ){
+            m[key] = 1;  // Outgoing connection from city 'key'
+            if( m.find(value) == m.end() ){
+                m[value] = -1; // Incoming connection to city 'value'
+            }
+            else{
+                --m[value];
+            }
+        }
+        else{
+            ++m[key];
+            if( m.find(value) == m.end() ){
+                m[value] = -1;
+            }
+            else{
+                --m[value];
+            }
+        }
+    }
+    
+    // After above parsing source city will have value in map as 1, destination city will 
+    // have value -1 and rest all intermediate cities will have value 0
+    
+    string start, end;
+    for(auto itr = m.begin(); itr != m.end(); ++itr){
+        //cout << itr->first << " ";
+        if( !start.empty() && !end.empty() )
+            break;
+        
+        if( itr->second == 1 )
+            start = itr->first;
+        else if( itr->second == -1 )
+            end = itr->first;
+    }
+    
+    while( !m.empty() && start != end ){
+        res += start + "->";
+        start = itn[start];
+    }
+    res += end;
+    cout << "\n" << res;
+}
+
+int main()
+{
+    map<string, string> dataSet;
+    dataSet["Chennai"] = "Banglore";
+    dataSet["Bombay"] = "Delhi";
+    dataSet["Goa"] = "Chennai";
+    dataSet["Delhi"] = "Goa";
+ 
+    printItinerary(dataSet);
+ 
+    return 0;
+}
