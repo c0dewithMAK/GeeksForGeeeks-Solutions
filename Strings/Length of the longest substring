@@ -1,0 +1,79 @@
+// { Driver Code Starts
+#include<bits/stdc++.h>
+using namespace std;
+
+
+ // } Driver Code Ends
+class Solution{
+    
+    int arraySlidingWindow(string S){
+        
+        vector<int> mp(26, -1);
+        int startIdx = 0;
+        int maxLen = -1;
+        for( int i = 0; i < S.size(); ++i ){
+            
+            if( mp[S[i]] != 1 ){
+                if( mp[S[i] - 'a'] >= startIdx )
+                    startIdx = mp[S[i] - 'a'] + 1;
+            }
+            mp[S[i] - 'a'] = i;
+            maxLen = max(maxLen, i - startIdx + 1);
+        }
+        return maxLen;
+    }
+    
+    int hashSetSlidingWindow(string S){
+        // This gives TLE error because for every window of unique characters created, we are 
+        // also emptying it once a duplicate character arrives
+        set<char> hashSet;
+        int a_pointer = 0;
+        int b_pointer = 0;
+        int maxLen = 0;
+        while( b_pointer < S.size() ){
+            if( hashSet.find(S[b_pointer]) == hashSet.end() ){
+                // New character incoming
+                hashSet.insert(S[b_pointer]);
+                maxLen = max(maxLen, b_pointer - a_pointer + 1);
+                ++b_pointer;
+            }
+            else{
+                hashSet.erase(S[a_pointer]);
+                ++a_pointer;
+            }
+        }
+        return maxLen;
+    }
+    
+    public:
+    int longestUniqueSubsttr(string S){
+       
+        // Base Cases :
+        if( S.empty() )
+            return 0;
+        if( S.size() == 1 )
+            return 1;
+        
+        // Method 1 : Using normal array and Sliding Window with 2 pointers 
+        return arraySlidingWindow(S);
+        
+        // Method 2 : Using hashset and sliding window (Much Cleaner code) but gives TLE
+        // return hashSetSlidingWindow(S);
+        
+    }
+};
+
+// { Driver Code Starts.
+int main()
+{
+	int t;
+	cin>>t;
+	while(t--)
+	{
+		string str;
+		cin>>str;
+		Solution ob;
+		cout<<ob.longestUniqueSubsttr(str)<<endl;
+	}
+	return 0;
+}  // } Driver Code Ends
