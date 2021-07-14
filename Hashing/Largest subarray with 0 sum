@@ -1,0 +1,49 @@
+// { Driver Code Starts
+#include <bits/stdc++.h>
+using namespace std;
+
+int maxLen(int A[], int n);
+
+int main()
+{
+    int T;
+    cin >> T;
+    while (T--)
+    {
+        int N;
+        cin >> N;
+        int A[N];
+        for (int i = 0; i < N; i++)
+            cin >> A[i];
+        cout << maxLen(A, N) << endl;
+    }
+}
+// } Driver Code Ends
+
+
+/*You are required to complete this function*/
+
+int maxLen(int A[], int n)
+{
+    int maxLen = 0;
+    int prefSum = 0;
+    map<int, vector<int>> m; // vector is used to store all occurrences of sum=0 
+    map<int, vector<int>>::iterator itr;
+    for(int i = 0; i < n; ++i){
+        prefSum += A[i]; // Only calculates the prefix sum count, don't need an array for this
+        
+        if( prefSum == 0 ){
+            // This denotes complete subarray from 0th index to ith index has sum = 0
+            maxLen = max(maxLen, i+1);
+        }
+        
+        if( (itr = m.find(prefSum)) != m.end() ){
+            vector<int> prev = itr->second;
+            for(int j : prev){
+                maxLen = max(maxLen, i - j);
+            }
+        }
+        m[prefSum].push_back(i);
+    }
+    return maxLen;
+}
