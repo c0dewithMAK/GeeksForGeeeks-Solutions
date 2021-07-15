@@ -1,0 +1,50 @@
+// { Driver Code Starts
+// Initial Template for C++
+
+#include <bits/stdc++.h>
+using namespace std;
+
+ // } Driver Code Ends
+// User function Template for C++
+
+#define MAX_BITS 32
+class Solution{
+public:
+    int countBits(int N, long long int A[])
+    {
+        int finalCount = 0; // This needs to be int as final return value is of int type
+
+        for(int i = MAX_BITS - 1; i >= 0; --i){
+            long long count = 0;
+            
+            for(int j = 0; j < N; ++j){
+                // For each ith bit location count number of zeros and ones
+                if( A[j] & (1 << i) )
+                    count += 1;
+            }
+            
+            // (N - count) gives number of zeroes, and since we have to find all pairs and to
+            // include pair (b, a) alogn with (a, b) multiple result with 2
+            finalCount = (finalCount + (count * (N - count) * 2) % 1000000007) % 1000000007;
+        }
+        return finalCount;
+    }
+};
+
+// { Driver Code Starts.
+
+int main(){
+    int t;
+    cin>>t;
+    while(t--){
+        int N;
+        cin>>N;
+        long long int A[N];
+        for(int i = 0;i < N; i++)
+            cin>>A[i];
+        
+        Solution ob;
+        cout<<ob.countBits(N, A)<<"\n";
+    }
+    return 0;
+}  // } Driver Code Ends
