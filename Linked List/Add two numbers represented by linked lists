@@ -1,0 +1,189 @@
+// { Driver Code Starts
+// driver
+
+#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
+using namespace std;
+
+/* Linked list Node */
+struct Node {
+    int data;
+    struct Node* next;
+    Node(int x) {
+        data = x;
+        next = NULL;
+    }
+};
+
+struct Node* buildList(int size)
+{
+    int val;
+    cin>> val;
+    
+    Node* head = new Node(val);
+    Node* tail = head;
+    
+    for(int i=0; i<size-1; i++)
+    {
+        cin>> val;
+        tail->next = new Node(val);
+        tail = tail->next;
+    }
+    
+    return head;
+}
+
+void printList(Node* n)
+{
+    while(n)
+    {
+        cout<< n->data << " ";
+        n = n->next;
+    }
+    cout<< endl;
+}
+
+
+ // } Driver Code Ends
+/* node for linked list:
+
+struct Node {
+    int data;
+    struct Node* next;
+    Node(int x) {
+        data = x;
+        next = NULL;
+    }
+};
+
+*/
+
+class Solution
+{
+    public:
+    
+    struct Node *reverse(struct Node * head){
+        struct Node *first = NULL;
+        struct Node *curr = head;
+        struct Node *second = head->next;
+        
+        while( curr ){
+            curr->next = first;
+            first = curr;
+            curr = second;
+            if( second )
+                second = second->next;
+            head = first;
+        }
+        
+        return head;
+    }
+    
+    struct Node * parseAddRemainingList(struct Node *prev, struct Node *first, 
+                                struct Node *second, int& carry){
+        int sum = 0;
+        while( second ){
+            first = (struct Node *)malloc(sizeof(struct Node));
+            if( prev )
+                prev->next = first;
+            sum = carry + second->data;
+            int firstDigit = sum % 10;
+            first->data = firstDigit;
+            sum /= 10;
+            int secondDigit = sum % 10;
+            carry = secondDigit;
+                    
+            prev = first;
+            first = first->next;
+            second = second->next;
+        }
+        return prev;
+    }
+    
+    //Function to add two numbers represented by linked list.
+    struct Node* addTwoLists(struct Node* first, struct Node* second)
+    {
+        if( !first || !second )
+            return NULL;
+            
+        first = reverse(first);
+        second = reverse(second);
+        
+        struct Node * head = NULL;
+        struct Node *prev = NULL;
+        struct Node *curr1 = first;
+        struct Node *curr2 = second;
+        struct Node *curr3 = NULL;
+        
+        int sum = 0;
+        int carry = 0;
+        
+        // First run through both lists and add elements till common length of both list
+        while( (curr1 && curr2) ){
+            curr3 = (struct Node *)malloc(sizeof(struct Node));
+            if( prev )
+                prev->next = curr3;
+                
+            if( !head ){
+                prev = head;
+                head = curr3;
+            }
+            
+            sum = carry + curr1->data + curr2->data;
+            int firstDigit = sum % 10;
+            curr3->data = firstDigit;
+            sum /= 10;
+            int secondDigit = sum % 10;
+            carry = secondDigit; // Carry propagates to next iteration of addition
+            
+            prev = curr3;
+            curr3 = curr3->next;
+            curr1 = curr1->next;
+            curr2 = curr2->next;
+        }
+        
+        if( !curr1 && !curr2 && (carry > 0) ){
+            prev->next = (struct Node*)malloc(sizeof(struct Node));
+            prev->next->data = carry;
+        }
+        else{
+            if( curr1 ){ // If second list got exhausted
+                prev = parseAddRemainingList(prev, curr3, curr1, carry);
+            }
+            else{
+                prev = parseAddRemainingList(prev, curr3, curr2, carry);
+            }
+        }
+        
+        if( carry > 0 ){
+            prev->next = (struct Node *)malloc(sizeof(struct Node));
+            prev->next->data = carry;
+        }
+        return (head = reverse(head));
+    }
+};
+
+
+// { Driver Code Starts.
+
+int main()
+{
+    int t;
+    cin>>t;
+    while(t--)
+    {
+        int n, m;
+        
+        cin>>n;
+        Node* first = buildList(n);
+        
+        cin>>m;
+        Node* second = buildList(m);
+        Solution ob;
+        Node* res = ob.addTwoLists(first,second);
+        printList(res);
+    }
+    return 0;
+}
+  // } Driver Code Ends
