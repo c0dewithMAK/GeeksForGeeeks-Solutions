@@ -1,0 +1,52 @@
+// { Driver Code Starts
+#include <bits/stdc++.h>
+using namespace std;
+
+
+ // } Driver Code Ends
+class Solution{
+public:
+
+    void storePermutations(string soFar, string rest, vector<string>& res){
+        
+        if( rest.size() == 0 ){
+            res.push_back(soFar);
+            return;
+        }
+        
+        for(int i = 0; i < rest.size(); ++i){
+            if( i == rest.size() - 1  )
+                storePermutations( soFar + rest.substr(0, i+1), rest.substr(i+1), res);
+            else
+                storePermutations( soFar + rest.substr(0, i+1) + " ", rest.substr(i+1), res);
+            
+        }        
+    }
+    
+    vector<string> permutation(string S){
+        
+        vector<string> res;
+        
+        storePermutations("", S, res);
+        return res;
+    }
+};
+
+// { Driver Code Starts.
+
+int  main(){
+    int t;
+    cin>>t;
+    while(t--){
+        string S;
+        cin>>S;
+        vector<string> ans;
+        Solution obj;
+        ans = obj.permutation(S);
+        for(int i=0;i<ans.size();i++){
+            cout<<"("<<ans[i]<<")";
+        }
+        cout << endl;
+    }
+}
+  // } Driver Code Ends
