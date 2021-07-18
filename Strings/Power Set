@@ -1,0 +1,60 @@
+// { Driver Code Starts
+#include<bits/stdc++.h>
+using namespace std;
+
+ // } Driver Code Ends
+class Solution{
+	public:
+		vector<string> AllPossibleStrings(string s){
+		    
+		    // LTrim - Remove whitespaces from beginning
+		    s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, 
+		                                            int>(std::isspace))));
+		    
+		    // RTrim - Remove whitespaces from end
+		    s.erase(std::find_if(s.rbegin(), s.rend(), 
+		            std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
+		    
+		    int setSize = s.size();
+		    
+		    /*powerSetSize of a string set with setSize n is (2**n -1)*/
+		    unsigned int powerSetSize = pow(2, setSize); // Ex - for len 3, this will be 2^3 = 8
+		    vector<string> res;
+		    
+		    for(int i = 0; i < powerSetSize; ++i){
+		        /* Run from 000..0 to 111..1, where i is 0 to s.size() */
+		        
+		        string temp;
+		        for(int j = 0; j < setSize; ++j){
+		            
+		            /* Check if jth bit in the ith bit representation is set
+                        If set then psuh jth character from string set to temp */
+		            if( i & (1 << j) )
+		                temp.push_back(s[j]);
+		        }
+		        if( temp.size() > 0 )
+		            // Finally add this current temp string permutation to res string vector
+		            res.push_back(temp);
+		    }
+		    
+		    sort(res.begin(), res.end());
+		    return res;
+		}
+};
+
+// { Driver Code Starts.
+int main(){
+	int tc;
+	cin >> tc;
+	while(tc--){
+		string s;
+		cin >> s;
+		Solution ob;
+		vector<string> res = ob.AllPossibleStrings(s);
+		for(auto i : res)
+			cout << i <<" ";
+		cout << "\n";
+
+	}
+	return 0;
+}  // } Driver Code Ends
