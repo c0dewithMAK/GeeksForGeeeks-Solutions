@@ -1,0 +1,112 @@
+// { Driver Code Starts
+// Initial Template for C++
+
+#include <bits/stdc++.h>
+using namespace std;
+
+ // } Driver Code Ends
+// User function Template for C++
+
+class Solution{
+public:
+
+    bool isValid(int r, int c, auto& grid, int n){
+        
+        if( grid[r][c] == 'Q' ) return false;
+        if( c == 0 ) return true;
+        
+        // Check for left-diagonal-up direction
+        int i = r-1, j = c-1;
+        while( i >= 0 && j >= 0 ){
+            if( grid[i--][j--] == 'Q' ) return false;
+        }
+        
+        // Check for straight left 
+        i = r; j = c-1;
+        while( j >= 0 ){
+            if( grid[i][j--] == 'Q' ) return false;
+        }
+        
+        // Check for left-diagonal-down
+        i = r + 1; j = c - 1;
+        while( i < n && j >= 0 ){
+            if( grid[i++][j--] == 'Q' ) return false;
+        }
+        
+        return true;
+    }
+
+    void nQueenUtil(int col, auto& grid, auto& n, auto& tempRes, auto& res){
+        
+        if( col == n ){
+            // Base condition when all queens' placement is successful
+            res.push_back(tempRes);
+            return;
+        }
+        
+        
+        // Concept here is to check and place each new queen on the next column towards the 
+        // right direction and then keep performing recursion for each successive row placements
+        // then
+        for(int row = 0; row < n; ++row){
+            if( isValid(row, col, grid, n) ){
+                
+                grid[row][col] = 'Q'; // Place the queen first            
+                tempRes.push_back(row+1);
+                
+                // Then perform recursion for successive possible placements of other queens
+                nQueenUtil(col+1, grid, n, tempRes, res);
+                
+                // When backtracking, remove this queen from grid
+                grid[row][col] = '\0';
+                tempRes.pop_back();
+            }
+        }
+        
+    }
+
+    vector<vector<int>> nQueen(int n) {
+        
+        if( n == 1 )
+        {
+            vector<vector<int>> res(1, vector<int>(1, 1));
+            res[0][0] = 1;
+            return res;
+        }
+        
+        
+        vector<vector<int>> res;
+        vector<vector<char>> grid(n, vector<char>(n, '\0'));
+        vector<int> tempRes;
+        
+        nQueenUtil(0, grid, n, tempRes, res);
+        return res;
+        
+    }
+};
+
+// { Driver Code Starts.
+
+int main(){
+    int t;
+    cin>>t;
+    while(t--){
+        int n;
+        cin>>n;
+        
+        Solution ob;
+        vector<vector<int>> ans = ob.nQueen(n);
+        if(ans.size() == 0)
+            cout<<-1<<"\n";
+        else {
+            for(int i = 0;i < ans.size();i++){
+                cout<<"[";
+                for(int u: ans[i])
+                    cout<<u<<" ";
+                cout<<"] ";
+            }
+            cout<<endl;
+        }
+    }
+    return 0;
+}  // } Driver Code Ends
