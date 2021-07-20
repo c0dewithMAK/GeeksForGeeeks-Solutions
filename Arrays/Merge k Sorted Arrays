@@ -1,0 +1,89 @@
+// { Driver Code Starts
+//Initial Template for C++
+
+#include<bits/stdc++.h>
+#define N 105
+using namespace std;
+void printArray(vector<int> arr, int size)
+{
+for (int i=0; i < size; i++)
+	cout << arr[i] << " ";
+}
+
+
+ // } Driver Code Ends
+//User function Template for C++
+
+
+class Solution
+{
+    public:
+    //Function to merge k sorted arrays.
+    vector<int> mergeKArrays(vector<vector<int>> arr, int K)
+    {
+        vector<int> res;
+        if( K == 1 ){
+            res.push_back(arr[0][0]);
+            return res;
+        }
+        
+        // Basically create a min-heap to extract out min element every time
+        priority_queue<int, vector<int>, greater<int>> pq;
+        
+        // This vector stores the column value of elements from each row which are present in 
+        // heap currently
+        vector<int> currElem(K);
+        for(int i = 0; i < K; ++i){
+            pq.push(arr[i][0]);
+            currElem[i] = 0;
+        }
+            
+        while( !pq.empty() ){
+            
+            int top = pq.top(); // Get the top element (min-value)
+            pq.pop();
+            res.push_back(top);
+            
+            for(int i = 0; i < K; ++i){
+                if( currElem[i] < K && arr[i][currElem[i]] == top ){
+                    ++currElem[i]; // Increment column to next considered element for ith row
+                    if( currElem[i] < K )
+                        pq.push(arr[i][currElem[i]]);
+                    break;
+                }
+            }
+        }
+        
+        return res;
+    }
+};
+
+// { Driver Code Starts.
+
+int main()
+{
+	int t;
+	cin>>t;
+	while(t--){
+	    int k;
+	    cin>>k;
+	    vector<vector<int>> arr(N, vector<int> (N, 0));
+	    for(int i=0; i<k; i++){
+	        for(int j=0; j<k; j++)
+	        {
+	            cin>>arr[i][j];
+	        }
+	    }
+	    Solution obj;
+    	vector<int> output = obj.mergeKArrays(arr, k);
+    	printArray(output, k*k);
+    	cout<<endl;
+    }
+	return 0;
+}
+
+
+
+
+
+  // } Driver Code Ends
