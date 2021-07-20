@@ -1,0 +1,104 @@
+// { Driver Code Starts
+// Initial template for C++
+
+#include <bits/stdc++.h>
+using namespace std;
+
+
+ // } Driver Code Ends
+// User function template for C++
+
+class Solution{
+    public:
+    
+    bool isValid(int r, int c, auto& m, int n, auto& visited){
+        if( r < 0 || r == n || c < 0 || c == n )
+            return false;
+        if( visited[r][c] )
+            return false;
+        if( m[r][c] == 0 )
+            return false;
+            
+        return true;
+    }
+    
+    void dfsUtil(int r, int c, auto& m, int n, auto& visited, auto& path, auto& paths){
+        
+        if( r == n - 1 && c == n - 1 && m[r][c] == 1){
+            // Base condition which determines rat reached the destination, stop recursion here
+            paths.push_back(path);
+            return;
+        }
+        
+        visited[r][c] = true;
+        
+        if( isValid(r, c+1, m, n, visited) ){ // Try to move RIGHT one cell
+            path.push_back('R');
+            dfsUtil(r, c+1, m, n, visited, path, paths);
+            path.pop_back();
+        }
+        
+        if( isValid(r+1, c, m, n, visited) ){ // Try to move DOWN one cell
+            path.push_back('D');
+            dfsUtil(r+1, c, m, n, visited, path, paths);
+            path.pop_back();
+        }
+        
+        if( isValid(r, c-1, m, n, visited) ){ // Try to move LEFT one cell
+            path.push_back('L');
+            dfsUtil(r, c-1, m, n, visited, path, paths);
+            path.pop_back();
+        }
+        
+        if( isValid(r-1, c, m, n, visited) ){ // Try to move UP one cell
+            path.push_back('U');
+            dfsUtil(r-1, c, m, n, visited, path, paths);
+            path.pop_back();
+        }
+        
+        // Current DFS call is over and backtracked, mark m[r][c] as unvisited
+        visited[r][c] = false;
+        
+    }
+    
+    vector<string> findPath(vector<vector<int>> &m, int n) {
+        
+        vector<string> paths;
+        if( m[0][0] == 0 ) // Base condition, starting point should have 1
+            return paths;
+        vector<vector<bool>> visited(n, vector<bool>(n, false));
+        string path;
+        
+        dfsUtil(0, 0, m, n, visited, path, paths);
+        sort(paths.begin(), paths.end());
+        return paths;
+    }
+};
+
+    
+
+
+// { Driver Code Starts.
+
+int main() {
+    int t;
+    cin >> t;
+    while (t--) {
+        int n;
+        cin >> n;
+        vector<vector<int>> m(n, vector<int> (n,0));
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                cin >> m[i][j];
+            }
+        }
+        Solution obj;
+        vector<string> result = obj.findPath(m, n);
+        if (result.size() == 0)
+            cout << -1;
+        else
+            for (int i = 0; i < result.size(); i++) cout << result[i] << " ";
+        cout << endl;
+    }
+    return 0;
+}  // } Driver Code Ends
