@@ -105,63 +105,68 @@ struct Node
 
 class Solution {
 public:
-    void storeLeftBound(Node *node, vector<int> &res){
-        if(!node)
+    void traverseLeftBound(Node *node, vector<int>& res){
+        if( !node )
             return;
         
-        if(node->left){
+        if( node->left || node->right ){
             res.push_back(node->data);
-            storeLeftBound(node->left, res);
-        }
-        else if(node->right){
-            res.push_back(node->data);
-            storeLeftBound(node->right, res);
+            if( node->left )
+                traverseLeftBound(node->left, res);
+            else if( node->right )
+                traverseLeftBound(node->right, res);
         }
     }
     
-    void storeLeaves(Node *node, auto &res){
-        if(!node)
+    void traverseLeaves(Node *node, vector<int>& res){
+        if( !node )
             return;
         
-        storeLeaves(node->left, res);
-        
-        if(!node->left && !node->right){
+        if( !node->left && !node->right )
             res.push_back(node->data);
-        }
-        
-        storeLeaves(node->right, res);
-        
+            
+        traverseLeaves(node->left, res);
+        traverseLeaves(node->right, res);
     }
-    void storeRightBound(Node *node, vector<int> &res){
-        if(!node)
+    
+    void traverseRightBound(Node *node, vector<int>& res){
+        if( !node )
             return;
-
-        if(node->right){
-            storeLeftBound(node->right, res);
+            
+        if( node->left || node->right ){
+            if( node->right )
+                traverseRightBound(node->right, res);
+            else if( node->left )
+                traverseRightBound(node->left, res);
             res.push_back(node->data);
         }
-        else if(node->left){
-            storeLeftBound(node->left, res);
-            res.push_back(node->data);
-        }
-        
     }
+    
     vector <int> printBoundary(Node *root)
     {
         vector<int> res;
         if(!root)
             return res;
+        else if( !root->left && !root->right ){
+            res.push_back(root->data);
+            return res;
+        }
         
-        // First store the root node's data
+        // First push root->data into result vector
         res.push_back(root->data);
         
-        // Traverse the left bundary except leftmost leaf node
-        storeLeftBound(root->left, res);
-        // Traverse all the leaf nodes
-        storeLeaves(root, res);
-        // Traverse the right boundary except the rightmost leaf node
-        storeRightBound(root->right, res);
+        // Traverse left boundary
+        if( root->left )
+            traverseLeftBound(root->left, res);
+            
+        // Traverse all leaves
+        traverseLeaves(root, res);
         
+        // Traverse right boundary
+        if( root->right ){
+            traverseRightBound(root, res);
+            res.pop_back();
+        }
         
         return res;
     }
