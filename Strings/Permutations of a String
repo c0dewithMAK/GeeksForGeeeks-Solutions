@@ -1,0 +1,64 @@
+// { Driver Code Starts
+//Initial Template for C++
+
+#include<bits/stdc++.h>
+using namespace std;
+
+
+ // } Driver Code Ends
+//User function Template for C++
+
+class Solution{
+    public:
+    
+    void permuteUtil( string s, int l, int r, vector<string>& res ){
+        
+        if( l == r ){
+            res.push_back(s);
+            return;
+        }
+        
+        for(int i = l; i <= r; ++i){
+            // First swap the first non-fixed character with remaining characters 1-by-1
+            swap(s[l], s[i]);
+            
+            // Perform recursion from (l+1)th character after keeping lth character fixed
+            permuteUtil( s, l+1, r, res );
+            
+            // After backtracking, recover/reconstruct the original string before above swap
+            swap( s[l], s[i] );
+        }
+        
+    }
+    
+    vector<string> permute(string s){
+        vector<string> res;
+        if( s.empty() )
+            return res;
+            
+        permuteUtil( s, 0, s.size() - 1, res );
+        return res;
+    }
+};
+
+// { Driver Code Starts.
+
+int main()
+{
+	int t;
+	cin>>t;
+	while(t--)
+	{
+		string s;
+		cin>>s;
+		Solution obj;
+		vector<string> ans;
+		ans = obj.permute(s);
+		sort(ans.begin(), ans.end());
+		for(auto x: ans)
+		    cout << x << " ";
+		
+		cout<<endl;
+	}
+	return 0;
+}  // } Driver Code Ends
