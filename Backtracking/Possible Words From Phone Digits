@@ -1,0 +1,121 @@
+// { Driver Code Starts
+//Initial Template for C++
+
+#include <bits/stdc++.h>
+#include <string>
+
+using namespace std;
+
+
+ // } Driver Code Ends
+//User function Template for C++
+
+class Solution
+{
+    public:
+    
+    void constructMap(int a[], int N, map<int, string>& m){
+        for(int i = 0; i < N; ++i){
+            switch(a[i]){
+                case 2:
+                {
+                    m[2] = "abc";
+                    break;
+                }
+                case 3:
+                {
+                    m[3] = "def";
+                    break;
+                }
+                case 4:
+                {
+                    m[4] = "ghi";
+                    break;
+                }
+                case 5:
+                {
+                    m[5] = "jkl";
+                    break;
+                }
+                case 6:
+                {
+                    m[6] = "mno";
+                    break;
+                }
+                case 7:
+                {
+                    m[7] = "pqrs";
+                    break;
+                }
+                case 8:
+                {
+                    m[8] = "tuv";
+                    break;
+                }
+                case 9:
+                {
+                    m[9] = "wxyz";
+                    break;
+                }
+            }
+        }
+    }
+    
+    void helper(int N, map<int, string>& m, int w, vector<string>& res, string& temp, int a[]){
+        // Base condition since any string formed will have at max N characters
+        if( w == N ){
+            res.push_back(temp);
+            return;
+        }
+        
+        string word = m[a[w]];
+        for(int i = 0; i < word.size(); ++i){
+            temp.push_back(word[i]);
+            helper(N, m, w+1, res, temp, a);
+            temp.pop_back();
+        }
+    }
+    
+    //Function to find list of all words possible by pressing given numbers.
+    vector<string> possibleWords(int a[], int N)
+    {
+        // Concept here is to first recurse over each word depth wise and reach the last word
+        // then from there, traverse each character of that word and backtrack and repeat
+        map<int, string> m;
+        constructMap(a, N, m);
+        vector<string> res;
+        string temp;
+        helper(N, m, 0, res, temp, a);
+        return res;
+    }
+};
+
+
+// { Driver Code Starts.
+
+int main() {
+  
+	int T;
+	
+	cin >> T; //testcases
+	
+	while(T--){ //while testcases exist
+	   int N;
+	    
+	   cin >> N; //input size of array
+	   
+	   int a[N]; //declare the array
+	   
+	   for(int i =0;i<N;i++){
+	       cin >> a[i]; //input the elements of array that are keys to be pressed
+	   }
+	   
+	   Solution obj;
+	   
+	  vector <string> res = obj.possibleWords(a,N);
+	  for (string i : res) cout << i << " ";
+	   cout << endl;
+	}
+	
+	return 0;
+}  // } Driver Code Ends
