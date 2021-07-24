@@ -1,0 +1,49 @@
+// { Driver Code Starts
+// Initial Template for C++
+
+#include <bits/stdc++.h>
+using namespace std;
+
+ // } Driver Code Ends
+// User function Template for C++
+
+class Solution {
+  public:
+    int canRepresentBST(int arr[], int N) {
+        if( N == 1 )
+            return N;
+            
+        int root = INT_MIN;
+        stack<int> s;
+        for(int i = 0; i < N; ++i){
+            while( !s.empty() && arr[i] > s.top() ){
+                // Found a next greater element, make it as root for next right subtree
+                root = s.top();
+                s.pop();
+            }
+            
+            if( arr[i] < root )
+                // If the current element is less than root, it should have already been parsed
+                // but isn't, hence it violates BST property
+                return 0;
+            
+            s.push( arr[i] );
+        }
+        return 1;
+    }
+};
+
+// { Driver Code Starts.
+int main() {
+    int t;
+    cin >> t;
+    while (t--) {
+        int N;
+        cin >> N;
+        int arr[N];
+        for (int i = 0; i < N; i++) cin >> arr[i];
+        Solution ob;
+        cout << ob.canRepresentBST(arr, N) << endl;
+    }
+    return 0;
+}  // } Driver Code Ends
