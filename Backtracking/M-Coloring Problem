@@ -1,0 +1,82 @@
+// { Driver Code Starts
+#include <bits/stdc++.h>
+using namespace std;
+
+
+ // } Driver Code Ends
+
+bool colorUtil(int u, int M, int V, bool graph[101][101], vector<int>& colors){
+    
+    if( u == V )
+        return true;
+    
+    bool flag;
+    for(int i = 1; i <= M; ++i)
+    {
+        
+        flag = true;
+        for(int v = 0; v < V; ++v){
+            if( !graph[u][v] || u == v )
+                continue;
+            
+            if( colors[v] == i ){
+                flag = false;
+                break;
+            }
+        }
+        
+        if( flag ){
+            // Found one color that can be used and satisfies the constraints
+            colors[u] = i;
+            if( colorUtil(u+1, M, V, graph, colors) )
+                return true;
+            else
+                colors[u] = 0;
+        }
+        
+    }
+    // All colors tried and none can be used, coloring failed
+    return false;
+}
+
+//Function to determine if graph can be coloured with at most M colours such
+//that no two adjacent vertices of graph are coloured with same colour.
+bool graphColoring(bool graph[101][101], int m, int V)
+{
+
+    vector<int> colors(V, 0);
+    
+    for(int i = 0; i < V; ++i){
+        int color = 1;
+        if(colorUtil(0, m, V, graph, colors))
+            return true;
+        fill(colors.begin(), colors.end(), 0);
+    }
+        
+    return false;
+}
+
+// { Driver Code Starts.
+
+int main() {
+    int t;
+    cin >> t;
+    while (t--) {
+        int n, m, e;
+        cin >> n >> m >> e;
+        int i;
+        bool graph[101][101];
+        for (i = 0; i < n; i++) {
+            memset(graph[i], 0, sizeof(graph[i]));
+        }
+        for (i = 0; i < e; i++) {
+            int a, b;
+            cin >> a >> b;
+            graph[a - 1][b - 1] = 1;
+            graph[b - 1][a - 1] = 1;
+        }
+        cout << graphColoring(graph, m, n) << endl;
+    }
+    return 0;
+}
+  // } Driver Code Ends
