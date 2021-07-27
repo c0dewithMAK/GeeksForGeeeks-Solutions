@@ -10,7 +10,6 @@ using namespace std;
 class Solution{   
 public:
     int dp[101][10001];
-    vector<vector<int>> memo;
     
     // Time : O(2^N) and Space = O(1) apart from auxiliary function stack space of O(N) 
     bool usingRecursion(int N, int arr[], int sum){
