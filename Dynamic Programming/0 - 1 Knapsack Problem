@@ -1,0 +1,121 @@
+// { Driver Code Starts
+#include<bits/stdc++.h>
+using namespace std;
+
+
+ // } Driver Code Ends
+
+class Solution
+{
+    public:
+    int dp[1001][1001] = { {0} };
+    
+    // This method takes O(2^n) time and O(1) space as no extra space is used here
+    int recursion(int W, int wt[], int val[], int n){
+        if( W == 0 || n == 0 ) // Base condition
+            return 0;
+            
+        if( wt[n-1] > W ){
+            // Here we don't even have a choice as we CANNOT include this item in knapsack
+            // weight of this n-1th item exceeds leftover knapsack capacity
+                return knapSack(W, wt, val, n-1);
+        }
+        else{
+            // Here we do have a choice to either include or exclude this item
+            // and we need to get the maximum profit out of either choice we make
+                return max( val[n-1] + knapSack( W - wt[n-1], wt, val, n-1 ),
+                        knapSack( W, wt, val, n-1 ));
+        }
+    }
+    
+    // This method takes O(n*W) time and O(n*W) space as dp[][] is being used
+    // to prevent overlapping redundant recursive calls
+    int recurMemoization(int W, int wt[], int val[], int n){
+        if( W == 0 || n == 0 ) // Base condition
+            return 0;
+            
+        if( wt[n-1] > W ){
+            // Here we don't even have a choice as we CANNOT include this item in knapsack
+            // weight of this n-1th item exceeds leftover knapsack capacity
+            if( dp[n-1][W] == 0 )
+                return ( dp[n-1][W] = knapSack(W, wt, val, n-1) );
+            else
+                return dp[n-1][W];
+        }
+        else{
+            // Here we do have a choice to either include or exclude this item
+            // and we need to get the maximum profit out of either choice we make
+            if( dp[n-1][W] == 0 )
+                return (dp[n-1][W] = max( val[n-1] + knapSack( W - wt[n-1], wt, val, n-1 ),
+                        knapSack( W, wt, val, n-1 )));
+            else
+                return dp[n-1][W];
+        }
+    }
+    
+    // Time : O(n*W) and Space is O(n*W) without recursion
+    int bottomUpDP(int W, int wt[], int val[], int n){
+        
+        for(int i = 0; i <= n; ++i){
+            for(int j = 0; j <= W; ++j){
+                
+                if( i == 0 || j == 0 ){
+                    dp[i][j] = 0;
+                    continue;
+                }
+                
+                if( wt[i-1] > j ){
+                    dp[i][j] = dp[i-1][j];
+                }
+                else{
+                    dp[i][j] = max( val[i-1] + dp[i-1][j-wt[i-1]], dp[i-1][j] );
+                }
+            }
+        }
+        return dp[n][W];
+    }
+    
+    //Function to return max value that can be put in knapsack of capacity W.
+    int knapSack(int W, int wt[], int val[], int n) 
+    { 
+        // Method 1: Uses simple recursion, gives TLE because of O(2^n) time
+        // return recursion(W, wt, val, n);
+        
+        // Method 2: Uses recursion with Memoization (Top-Down) and time O(n*W)
+        // return recurMemoization(W, wt, val, n);
+        
+        // Method 3: Using Bottom-Up DP
+        return bottomUpDP(W, wt, val, n);
+    }
+};
+
+// { Driver Code Starts.
+
+int main()
+ {
+    //taking total testcases
+    int t;
+    cin>>t;
+    while(t--)
+    {
+        //reading number of elements and weight
+        int n, w;
+        cin>>n>>w;
+        
+        int val[n];
+        int wt[n];
+        
+        //inserting the values
+        for(int i=0;i<n;i++)
+            cin>>val[i];
+        
+        //inserting the weights
+        for(int i=0;i<n;i++)
+            cin>>wt[i];
+        Solution ob;
+        //calling method knapSack()
+        cout<<ob.knapSack(w, wt, val, n)<<endl;
+        
+    }
+	return 0;
+}  // } Driver Code Ends
