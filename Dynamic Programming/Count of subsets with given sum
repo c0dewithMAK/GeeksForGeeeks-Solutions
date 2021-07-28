@@ -1,0 +1,114 @@
+// { Driver Code Starts
+#include <bits/stdc++.h>
+using namespace std;
+
+ // } Driver Code Ends
+class Solution{
+    public:
+    vector<vector<int>> memo;
+    int mod = 1e9 + 7;
+    
+    // Time = O(2^n) and Space = O(n*sum)
+    int subsetSum_recur(int arr[], int n, int sum, int count){
+        
+        if( sum == 0 ){
+            ++count;
+            return count;
+        }
+        if( n == 0 )
+            return count;
+            
+        if( arr[n-1] > sum )
+            return subsetSum_recur(arr, n-1, sum, count);
+        else
+            return (/*Include*/ subsetSum_recur(arr, n-1, sum - arr[n-1], count) +
+                    /*Exclude*/ subsetSum_recur(arr, n-1, sum, count));
+    }
+    
+    // Time = O(n*sum) and Space = O(n*sum)+O(n)
+    int subsetSum_memo(int arr[], int n, int sum, int count){
+        
+        if( sum == 0 ){
+            ++count;
+            return count;
+        }
+        if( n == 0 )
+            return count;
+        
+        if( memo[n-1][sum] != -1 )
+            return memo[n-1][sum];
+        
+        memo[n-1][sum] = /*Exclude*/ ( subsetSum_memo(arr, n-1, sum, count) % mod );
+        
+        if( sum < arr[n-1] )
+            return memo[n-1][sum];
+        else
+            return memo[n-1][sum] = ( /*Exclude*/ memo[n-1][sum] +
+                    /*Include*/ (subsetSum_memo(arr, n-1, sum-arr[n-1], count) % mod));
+    }
+    
+    // Most Efficient Method : Time = O(n*sum), Space = O(n*sum)
+    int subsetSum_bottomUpDP(int arr[], int n, int sum, int count){
+        
+        for(int i = 0; i <= n; ++i)
+            memo[i][0] = 1;
+        for(int i = 1; i <= sum; ++i)
+            memo[0][i] = 0;
+            
+        for(int i = 1; i <= n; ++i){
+            for(int j = 1; j <= sum; ++j){
+                memo[i][j] = ( memo[i-1][j] % mod );
+                if( j >= arr[i-1] )
+                    memo[i][j] = ( memo[i-1][j] % mod ) + ( memo[i-1][j - arr[i-1]] % mod );
+            }
+        }
+        return memo[n][sum];
+    }
+    
+	int perfectSum(int arr[], int n, int sum)
+	{
+	    int count = 0;
+	    memo.resize(n+1);
+        for(int i = 0; i <= n; ++i){
+            memo[i].resize(sum+1);
+            fill(memo[i].begin(), memo[i].end(), -1);
+        }
+        
+        // Method 1 (gives TLE) : Using simple recursion
+        //return subsetSum_recur(arr, n, sum, count);
+        
+        // Method 2 : Using Memoization
+        // return ( subsetSum_memo(arr, n, sum, count) % mod );
+        
+        // Method 3: Using Bottom Up Dynamic Programming
+        return ( subsetSum_bottomUpDP(arr, n, sum, count) % mod );
+	}
+	  
+};
+
+// { Driver Code Starts.
+int main() 
+{
+   	
+   
+   	int t;
+    cin >> t;
+    while (t--)
+    {
+        int n, sum;
+
+        cin >> n >> sum;
+
+        int a[n];
+        for(int i = 0; i < n; i++)
+        	cin >> a[i];
+
+       
+
+	    Solution ob;
+	    cout << ob.perfectSum(a, n, sum) << "\n";
+	     
+    }
+    return 0;
+}
+  // } Driver Code Ends
