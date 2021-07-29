@@ -1,0 +1,115 @@
+// { Driver Code Starts
+#include <bits/stdc++.h>
+using namespace std;
+
+ // } Driver Code Ends
+class Solution{
+    public:
+    vector<vector<int>> dp;
+    
+    // Time = O(n*sum) and Space = O(n*sum) where sum = total sum of all array elements
+    int subsetSumUtil(int arr[], int n, int sum){
+        
+        int min = INT_MAX;
+        for(int i = 0; i <= n; ++i)
+            dp[i][0] = true;
+        for(int i = 1; i <= sum; ++i)
+            dp[0][i] = false;
+            
+        // Create the Table first
+        for(int i = 1; i <= n; ++i){
+            for(int j = 1; j <= sum; ++j){
+                dp[i][j] = dp[i-1][j];
+                if( j >= arr[i-1] )
+                    dp[i][j] = ( dp[i-1][j] || dp[i-1][j-arr[i-1]]);
+            }
+        }
+        
+        // This is the core addition to the normal subset sum problem
+        // Here we traverse columns from sum/2 to 0 in the nth row and for each true entry
+        // denoting that subset is possible, we calculate (sum - 2*s1) which gives diff
+        // value. Now we will look for minimum such value.
+        for(int i = sum/2; i >= 0; --i){
+            if( dp[n][i] && (sum - 2*i) <= min )
+                min = sum - 2*i;
+        }
+        return min;
+    }
+    
+    // Recursion : Time = O(2^n) and Space = O(n)
+    int subsetSumUtil(int arr[], int n, int sumCalculated, int sum){
+        
+        if( n == 0 ){
+            return abs( sum - (2 * sumCalculated));
+        }
+        
+        return min( subsetSumUtil(arr, n-1, sumCalculated + arr[n-1], sum),
+                    subsetSumUtil(arr, n-1, sumCalculated, sum));
+    }
+    
+    // Memoization : Time = O(n*sum) and Space = O(n*sum)+O(n)
+    int subsetSumUtil_memo(int arr[], int n, int sumCalculated, int sum){
+        
+        if( n == 0 ){
+            return abs( sum - (2 * sumCalculated) );
+        }
+        
+        if( dp[n-1][sumCalculated] != -1 )
+            return dp[n-1][sumCalculated];
+        
+        return (dp[n-1][sumCalculated] = min(subsetSumUtil_memo(arr, n-1, sumCalculated + arr[n-1], sum),
+                                subsetSumUtil_memo(arr, n-1, sumCalculated, sum)));
+    }
+    
+	int minDifference(int arr[], int n)  { 
+	    int sum = 0;
+	    for(int i = 0; i < n; ++i)
+	        sum += arr[i];
+	    int sumCalculated = 0;
+	    
+        // Method 1 (gives TLE) : Using recursion
+        //return subsetSumUtil(arr, n, sumCalculated, sum);
+        
+        // Method 2 : Using Memoization
+        /*dp.resize(n+1);
+        for(int i = 0; i <= n; ++i){
+	    dp[i].resize(sum+1);
+	        fill(dp[i].begin(), dp[i].end(), -1);
+	    }
+        return subsetSumUtil_memo(arr, n, sumCalculated, sum);*/
+	        
+        // Method 3 : Using Bottom Up DP Tabulation (Best Method)
+        dp.resize(n+1);
+        for(int i = 0; i <= n; ++i){
+	    dp[i].resize(sum+1);
+	        fill(dp[i].begin(), dp[i].end(), false);
+	    }
+	    return subsetSumUtil(arr, n, sum);
+	} 
+};
+
+
+// { Driver Code Starts.
+int main() 
+{
+   
+   
+   	int t;
+    cin >> t;
+    while (t--)
+    {
+        int n;
+        cin >> n;
+
+        int a[n];
+        for(int i = 0; i < n; i++)
+        	cin >> a[i];
+
+       
+
+	    Solution ob;
+	    cout << ob.minDifference(a, n) << "\n";
+	     
+    }
+    return 0;
+}  // } Driver Code Ends
