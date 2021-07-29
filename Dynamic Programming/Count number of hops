@@ -1,0 +1,82 @@
+// { Driver Code Starts
+#include <bits/stdc++.h>
+using namespace std;
+
+ // } Driver Code Ends
+
+
+class Solution
+{
+    public:
+    int mod = 1e9 + 7;
+    vector<long long> dp;
+    
+    // Time = O(n) and Space = O(n) + O(n) due to recursion stack
+    long long count_recur(int n){
+        if( n == 0 ){
+            return 1;
+        }
+        
+        if( n < 0 )
+            return 0;
+        
+        if( dp[n-1] != -1 )
+            return dp[n-1];
+        return dp[n-1] = ( count_recur(n-3) + count_recur(n-2) + count_recur(n-1) ) % mod;
+    }
+    
+    // Much efficient, Time = O(n) and Space = O(1)
+    long long count_iter(int n){
+        if( n == 1 || n == 0 )
+            return 1;
+        if( n == 2 )
+            return 2;
+        long long a = 1; // when n = 0, total ways to reach 0 is 1, don't climb at all
+        long long b = 1; // when n = 1, total ways = 1, climb up using step of 1
+        long long c = 2; // when n = 2, total ways = 2, climb 1+1 steps or 2 steps
+        long long d; // for next iteration of steps
+        
+        // From above recurrence we find the below relation
+        for(int i = 3; i <= n; ++i){
+            d = ( a + b + c ) % mod;
+            a = b;
+            b = c;
+            c = d;
+        }
+        return d;
+    }
+    
+    //Function to count the number of ways in which frog can reach the top.
+    long long countWays(int n)
+    {
+        // Method 1 : Uses a dp[n] space 
+        //dp.resize(n);
+        //fill(dp.begin(), dp.end(), -1);
+        //return count_recur(n);
+        
+        return count_iter(n);
+    }
+};
+
+
+// { Driver Code Starts.
+int main()
+{
+    //taking testcases
+	int t;
+	cin >> t;
+	
+	while(t--)
+	{
+	    //taking number of steps in stair
+		int n;
+		cin>>n;
+		Solution ob;
+		//calling function countWays()
+		cout << ob.countWays(n) << endl;
+	}
+    
+    return 0;
+    
+}
+  // } Driver Code Ends
