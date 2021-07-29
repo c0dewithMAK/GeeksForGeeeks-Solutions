@@ -1,0 +1,68 @@
+class Solution {
+public:
+    map<pair<int, int>, int> memo;
+    
+    // Time = O(2^n), and Space = O(n) for recursion stack
+    int subsetSumRecur(vector<int>& nums, int n, int sum, int target){
+        if( n == 0 && sum == target ){
+            return 1;
+        }
+        if( n == 0 )
+            return 0;
+
+        return ( subsetSumRecur(nums, n-1, sum + nums[n-1], target) +   // Add
+                 subsetSumRecur(nums, n-1, sum - nums[n-1], target) );  // Substract  
+    }
+    
+    // Time = O(n*|sum|) and Space = O(n*|sum|) + O(n)
+    int subsetSumMemo(vector<int>& nums, int n, int sum, int target){
+        if( n == 0 && sum == target ){
+            return 1;
+        }
+        if( n == 0 )
+            return 0;
+        
+        if( memo.find({n-1, sum}) != memo.end() )
+            return memo[{n-1, sum}];            
+        
+        return (memo[{n-1, sum}] =  subsetSumMemo(nums, n-1, sum + nums[n-1], target) +   // Add
+                           subsetSumMemo(nums, n-1, sum - nums[n-1], target) );  // Substract  
+    }
+    
+    // Time = O(n*sum) and Space = O(n^2)
+    int subsetSumDp(vector<int>& nums, int S){
+        int sum=0;
+        for(int i=0;i<nums.size();i++)
+            sum=sum+nums[i];
+        if (S < -sum || S > sum) 
+            return 0;
+        vector<vector<int>> dp(nums.size() + 1, vector<int>(sum*2 + 1, 0));
+        //int dp[nums.size()+1][sum*2+1];
+        dp[0][sum]=1;
+        for(int i=1;i<=nums.size();i++)
+        {
+            for(int j=0;j<sum*2+1;j++)
+            {
+                if(j+nums[i-1]<sum*2+1)
+                    dp[i][j]=dp[i][j]+dp[i-1][j+nums[i-1]];
+                if(j-nums[i-1]>=0)
+                    dp[i][j]=dp[i][j]+dp[i-1][j-nums[i-1]];
+            }
+        }
+        
+        return dp[nums.size()][sum+S]; 
+    }
+
+    int findTargetSumWays(vector<int>& nums, int target) {
+        int n = nums.size();
+        
+        // Method 1 : Using Simple recursion
+        //return subsetSumRecur(nums, n, 0, target);
+        
+        // Method 2 : Using Memoization
+        //return subsetSumMemo(nums, n, 0, target);
+        
+        // Method 3 : Using Bottom Up DP (Most Efficient)
+        return subsetSumDp(nums, target);
+    }
+};
