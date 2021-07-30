@@ -1,0 +1,58 @@
+class Solution {
+public:
+    /**
+     * @param prices: the prices
+     * @param n: the length of rod
+     * @return: the max value
+     */
+    vector<vector<int>> memo;
+
+    // Time = O(n^2) and Space = O(n^2)+O(n)
+    int cutRod_memo(vector<int>& prices, vector<int>& len, int n, int maxLen){
+
+        if( n == 0 || maxLen == 0 )
+            return 0;
+
+        if( memo[n-1][maxLen] != -1 )
+            return memo[n-1][maxLen];
+
+        memo[n-1][maxLen] = cutRod_memo(prices, len, n-1, maxLen);
+
+        if( n <= maxLen )
+            return ( memo[n-1][maxLen] = max( prices[n-1] + 
+                    cutRod_memo(prices, len, n, maxLen - len[n-1]),
+                    memo[n-1][maxLen] ) );
+        else
+            return memo[n-1][maxLen];
+
+    }
+    
+    // Time = O(n^2) and Space = O(n)
+    int cutRod_DP(vector<int>& prices, int n){
+        vector<int> dp(n+1, 0);
+        dp[0] = 0; // Maximum Profit for cutting the total rod of length 0 is 0
+        for(int i = 1; i <= n; ++i){
+            int maxVal = INT_MIN;
+            for(int j = 0; j < i; ++j){
+                maxVal = max( prices[j] + dp[i-j-1], maxVal);
+            }
+            dp[i] = maxVal;
+        }
+        return dp[n];
+    }
+
+    int cutting(vector<int> &prices, int n) {
+
+        // Method 1: Memoization (Unbounded Knapsack), better approach
+        vector<int> length(prices.size());
+        memo.resize(n+1);
+        for(int i = 0; i <= n; ++i)
+            memo[i].resize(n+1, -1);
+        for(int i = 0; i < length.size(); ++i)
+            length[i] = i+1;
+        return cutRod_memo(prices, length, n, n);
+
+        // Method 2: Using Bottom Up DP, Best Approach
+        return cutRod_DP(prices, n);
+    }
+};
