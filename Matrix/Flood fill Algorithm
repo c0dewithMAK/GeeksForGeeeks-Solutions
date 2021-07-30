@@ -1,0 +1,116 @@
+// { Driver Code Starts
+#include<bits/stdc++.h>
+using namespace std;
+
+ // } Driver Code Ends
+class Solution {
+public:
+#define TOTAL_MOVEMENTS 4
+    vector<pair<int, int>> movements = { {0, 1}, {1, 0}, {0, -1}, {-1, 0} };
+    int R;
+    int C;
+    
+    bool isValid(auto& image, auto& visited, int r, int c, int color){
+        if( ( r < 0 || r >= R || c < 0 || c >= C ) )
+            return false;
+        if( visited[r][c] )
+            return false;
+        if( image[r][c] != color )
+            return false;
+        return true;
+    }
+    
+    // Method 1: Using BFS
+    vector<vector<int>> usingBFS(vector<vector<int>>& image, int sr, int sc, int newColor,
+                                    vector<vector<bool>> visited) {
+        vector<vector<int>> resMatrix = image;
+        int color = image[sr][sc];
+        queue<pair<int, int>> q;
+        q.push({sr,sc});
+        
+        while( !q.empty() ){
+            pair<int, int> coord = q.front();
+            q.pop();
+            int r = coord.first;
+            int c = coord.second;
+            resMatrix[r][c] = newColor;
+            visited[r][c] = true;
+            for(int i = 0; i < TOTAL_MOVEMENTS; ++i){
+                if( isValid(image, visited, r + movements[i].first, c + movements[i].second, 
+                             color) )
+                {
+                    q.push({ r + movements[i].first, c + movements[i].second });
+                }
+            }
+        }
+        
+        return resMatrix;
+    }
+    
+    // Method 2 : Using DFS Traversal
+    void usingDFS(auto& image, auto& resMatrix, int r, int c, 
+                    int color, int newColor, auto& visited){
+        
+        visited[r][c] = true;
+        resMatrix[r][c] = newColor;
+        for(int i = 0; i < TOTAL_MOVEMENTS; ++i){
+            if(isValid(image, visited, r + movements[i].first, c + movements[i].second, color))
+            {
+                usingDFS(image, resMatrix, r + movements[i].first, c + movements[i].second,
+                                color, newColor, visited);
+            }
+        }
+    }
+    
+    vector<vector<int>> floodFill(vector<vector<int>>& image, int sr, int sc, int newColor) {
+        vector<vector<int>> resMatrix = image;
+        R = image.size();
+        C = image[0].size();
+        int color = image[sr][sc];
+        vector<vector<bool>> visited(R, vector<bool>(C, false));
+        if(color == newColor)
+            return image;
+        
+        if( R == 1 && C == 1 )
+        {
+            if( sr == 0 && sc == 0 ){
+                resMatrix[0][0] = newColor;
+                return resMatrix;
+            }
+            else
+                return resMatrix;
+        }
+        
+        // Method 1 : Using BFS (giving TLE)
+        //return usingBFS(image, sr, sc, newColor, visited);
+        
+        // Method 2 : Using DFS (working fine)
+        usingDFS(image, resMatrix, sr, sc, color, newColor, visited);
+        return resMatrix;
+    }
+};
+
+// { Driver Code Starts.
+int main(){
+	int tc;
+	cin >> tc;
+	while(tc--){
+		int n, m;
+		cin >> n >> m;
+		vector<vector<int>>image(n, vector<int>(m,0));
+		for(int i = 0; i < n; i++){
+			for(int j = 0; j < m; j++)
+				cin >> image[i][j];
+		}
+		int sr, sc, newColor;
+		cin >> sr >> sc >> newColor;
+		Solution obj;
+		vector<vector<int>> ans = obj.floodFill(image, sr, sc, newColor);
+		for(auto i: ans){
+			for(auto j: i)
+				cout << j << " ";
+			cout << "\n";
+		}
+	}
+	return 0;
+}  // } Driver Code Ends
