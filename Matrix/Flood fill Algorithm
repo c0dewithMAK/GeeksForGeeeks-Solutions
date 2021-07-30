@@ -20,7 +20,7 @@ public:
         return true;
     }
     
-    // Method 1: Using BFS
+    // Method 1: Using BFS (gives TLE)
     vector<vector<int>> usingBFS(vector<vector<int>>& image, int sr, int sc, int newColor,
                                     vector<vector<bool>> visited) {
         vector<vector<int>> resMatrix = image;
