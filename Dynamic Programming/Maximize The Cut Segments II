@@ -1,0 +1,136 @@
+// { Driver Code Starts
+#include<bits/stdc++.h>
+using namespace std;
+
+
+
+ // } Driver Code Ends
+
+
+class Solution
+{
+    public:
+    vector<vector<int>> memo;
+    
+    // Time = O(2^n) and Space = O(n)
+    int ubk_recur(vector<int>& wt, int n, int w){
+        
+        if( w == 0 )
+            return 0;
+        if( n == 0 )
+            return 0;
+        
+        if( w >= wt[n-1] )    
+            return max( 1 + ubk_recur(wt, n, w - wt[n-1]), ubk_recur(wt, n-1, w) );
+        else
+            return ubk_recur(wt, n-1, w);
+    }
+    
+    // Time = O(n*w) and Space = O(n*w)+O(w)
+    int ubk_memo(vector<int>& wt, int n, int w){
+        
+        if( w == 0 )
+            return (memo[n][w] = 0);
+        if( n == 0 )
+            return (memo[n][w] = INT_MIN);
+            
+        if( memo[n][w] != -1 )
+            return memo[n][w];
+        
+        if( w >= wt[n-1] )    
+            return memo[n][w] = max( 1 + ubk_recur(wt, n, w - wt[n-1]), 
+                                    ubk_recur(wt, n-1, w) );
+        else
+            return memo[n][w] = ubk_recur(wt, n-1, w);
+    }
+    
+    // Method 3 : Using Bottom Up DP, Time = O(n*w) ~ O(w) only as n = 3 constant given in ques
+    // and Space = O(n*w)
+    int ubk_BottomUp(vector<int>& wt, int n, int w){
+        vector<vector<int>> dp(n+1, vector<int>(w+1));
+        dp[0][0] = 0;
+        for(int i = 1; i <= w; ++i)
+            dp[0][i] = INT_MIN;
+        for(int i = 1; i <= n; ++i)
+            dp[i][0] = 0;
+        
+        for(int i = 1; i <= n; ++i){
+            for(int j = 1; j <= w; ++j){
+                if( j >= wt[i-1] )
+                    dp[i][j] = max( 1 + dp[i][j-wt[i-1]], dp[i-1][j] );
+                else
+                    dp[i][j] = dp[i-1][j];
+            }
+        }
+        return ( dp[n][w] < 0 ? 0 : dp[n][w] );
+    }
+    
+    // Method 4 : Using Bottom Up DP, Time = O(n*w) ~ O(w) only as n = 3 constant given in ques
+    // and Space = O(n)
+    int ubk_BottomUpSpaceOptimized(vector<int>& wt, int n, int w){
+        int dp[w+1];
+        memset(dp, -1, sizeof(dp));
+        dp[0] = 0;
+        for(int i = 0; i <= w; ++i){ // n is basically constant over here as n = 3, x, y, z
+            for(int j = 1; j <= n; ++j){
+                if( dp[i] == -1 )
+                    continue;
+                if( i + wt[j-1] <= w ){
+                    dp[i + wt[j-1]] = max( dp[i + wt[j-1]], 1 + dp[i]);
+                }
+            }
+        }
+        if( dp[w] == -1 )
+            return 0;
+
+        return dp[w];
+    }
+    
+    //Function to find the maximum number of cuts.
+    int maximizeTheCuts(int n, int x, int y, int z)
+    {
+        vector<int> wt(3);
+        wt[0] = x;
+        wt[1] = y;
+        wt[2] = z;
+        int w = wt.size();
+        sort(wt.begin(), wt.end());
+        // Method 1 : Using Recursion (gives TLE)
+        // return ubk_recur(wt, w, n);
+        
+        // Method 2 : Using Memoization (gives as TLE as O(N) is needed in question)
+        // memo = vector<vector<int>>(w+1, vector<int>(n+1, -1));
+        // int ans = ubk_memo(wt, w, n);
+        // return ( ans < 0 ? 0 : ans );
+        
+        // Method 3 : Using Bottom Up DP, Efficient Approach
+        // return ubk_BottomUp(wt, w, n);
+        
+        // Method 4 : Using Bottom Up DP, BEST approach, optimized space
+        return ubk_BottomUpSpaceOptimized(wt, w, n);
+    }
+};
+
+// { Driver Code Starts.
+int main() {
+    
+    //taking testcases
+    int t;
+    cin >> t;
+    while(t--)
+    {
+        //taking length of line segment
+        int n;
+        cin >> n;
+        
+        //taking types of segments
+        int x,y,z;
+        cin>>x>>y>>z;
+        Solution obj;
+        //calling function maximizeTheCuts()
+        cout<<obj.maximizeTheCuts(n,x,y,z)<<endl;
+
+    }
+
+	return 0;
+}  // } Driver Code Ends
