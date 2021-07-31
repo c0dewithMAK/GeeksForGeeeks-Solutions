@@ -1,0 +1,137 @@
+// { Driver Code Starts
+#include <bits/stdc++.h>
+using namespace std;
+
+ // } Driver Code Ends
+class Solution{
+
+	public:
+	vector<vector<int>> memo;
+	
+	// Method 1 : Time = O(2^M) and Space = O(M) recursion stacks
+	int ubk_recur(int coins[], int n, int w){
+	    
+	    if( w == 0 ){
+	        return 0;
+	    }
+	    if( n == 0 )
+	        return INT_MAX - 1;
+	        
+        if( (coins[n-1] <= w) ){
+                return min ( 1 + ubk_recur(coins, n, w - coins[n-1]),
+                            ubk_recur(coins, n - 1, w));
+        }
+        else
+            return ubk_recur(coins, n - 1, w);
+	}
+	
+	// Time = O(n*w) and Space = O(n*w)+O(w)
+	int ubk_memo(int coins[], int n, int w){
+	    
+	    if( w == 0 ){
+	        return ( memo[n][w] = 0 );
+	    }
+	    if( n == 0 )
+	        return ( memo[n][w] = INT_MAX - 1 );
+	        
+        if( memo[n][w] != -1 )
+            return memo[n][w];
+            
+        if( (coins[n-1] <= w) ){
+                return ( memo[n][w] = min ( 1 + ubk_memo(coins, n, w - coins[n-1]),
+                            ubk_memo(coins, n - 1, w)) );
+        }
+        else
+            return ( memo[n][w] = ubk_memo(coins, n - 1, w) );
+	}
+	
+	// Time = O(n*w) and Space = O(n*w), Quite Efficient
+	int ubk_bottomUp(int coins[], int n, int w){
+	    
+	    int dp[n+1][w+1];
+
+	    // Initialization here is tricky as below
+	    for(int i = 0; i <= n; ++i)
+	        dp[i][0] = 0;
+        for(int i = 1; i <= w; ++i)
+            dp[0][i] = INT_MAX - 1;
+	    
+	    // Now perform bottom up similar to knapsack but here unbounded
+	    for(int i = 1; i <= n; ++i){
+	        for(int j = 1; j <= w; ++j){
+                if( j >= coins[i-1] )
+                    dp[i][j] = min( 1 + dp[i][j - coins[i - 1]],
+	                                dp[i-1][j]);
+                else
+                    dp[i][j] = dp[i-1][j];
+	        }
+	    }
+
+	    return dp[n][w];
+	}
+	
+	// Time = O(n*w) and Space = O(w), Utmost Efficient but Complicated :P
+	int ubk_bottomUpSpaceOptimized(int coins[], int n, int w){
+	    
+	    int dp[w+1] = {0};
+	    for(int i = 1; i <= w; ++i)
+	        dp[i] = INT_MAX - 1;
+	   // dp[0] remains = 0
+	    
+	    for(int i = 0; i < n; ++i){
+	        for(int j = 1; j <= w; ++j){
+	            if( j >= coins[i] ){
+	                dp[j] = min( dp[j], 1 + dp[j - coins[i]]);
+	            }
+    	    }
+	    }
+	    return dp[w];
+	}
+	
+	int minCoins(int coins[], int M, int V) 
+	{ 
+	    // Method 1 : Using simple recursion (gives TLE)
+	    //int ans = ubk_recur(coins, M, V);
+	    //return ( ans == INT_MAX - 1 ? -1 : ans);
+	    
+	    // Method 2 : Using Memoization
+	    //memo = vector<vector<int>>(M+1, vector<int>(V+1, -1));
+	    //int ans = ubk_memo(coins, M, V);
+	    //return ( ans == INT_MAX - 1 ? -1 : ans);
+	    
+	    
+	    // Method 3 : Using Bottom Up DP, More Efficient
+	    //int ans = ubk_bottomUp(coins, M, V);
+	    //return ( ans == INT_MAX - 1 ? -1 : ans);
+	    
+	    // Method 4 : Using Bottom Up DP using only Line Space, MOST EFFICIENT
+	    int ans = ubk_bottomUpSpaceOptimized(coins, M, V);
+	    return ( ans == INT_MAX - 1 ? -1 : ans);
+	} 
+	  
+};
+
+// { Driver Code Starts.
+int main() 
+{
+   
+   
+   	int t;
+    cin >> t;
+    while (t--)
+    {
+        int v, m;
+        cin >> v >> m;
+
+        int coins[m];
+        for(int i = 0; i < m; i++)
+        	cin >> coins[i];
+
+      
+	    Solution ob;
+	    cout << ob.minCoins(coins, m, v) << "\n";
+	     
+    }
+    return 0;
+}
+  // } Driver Code Ends
