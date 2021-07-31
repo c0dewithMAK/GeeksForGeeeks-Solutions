@@ -1,0 +1,130 @@
+// { Driver Code Starts
+// Initial template for C++
+
+#include <bits/stdc++.h>
+using namespace std;
+
+
+ // } Driver Code Ends
+class Solution {
+public:
+    int x[8] = {-1,-1,0,1,1,1,0,-1};
+    int y[8] = {0,1,1,1,0,-1,-1,-1};
+    
+    bool check(vector<vector<char> >& board, int i, int j, string &s, int k)
+    {
+        if(k == s.length())
+        return  true;
+        
+        if(i >= board.size() || i<0 || j>= board[0].size() || j < 0 )
+            return false;
+ 
+        if(board[i][j] != s[k])
+        return false;
+        
+        if(board[i][j] == '#')
+        return false;
+        
+               
+        int ans = false;
+        
+        char ch = board[i][j];
+        board[i][j] = '#';
+        
+        for(int t = 0; t<8; t++)
+        {
+            ans = ans | (check(board, i+x[t], j + y[t], s, k+1));
+            if(ans)
+            break;
+        }
+        
+        /*
+        
+        if you are not a fan of the loop above do it manually :)
+        ps: doing manually makes you realise the beauty of these type of problems 
+        
+        ans = (ans | check(board, i+1, j, s, k+1));
+        ans = (ans | check(board, i+1, j+1, s, k+1));
+        ans = (ans | check(board, i+1, j-1, s, k+1));
+        ans = (ans | check(board, i-1, j, s, k+1));
+        ans = (ans | check(board, i-1, j+1, s, k+1));
+        ans = (ans | check(board, i-1, j-1, s, k+1));
+        ans = (ans | check(board, i, j+1, s, k+1));
+        ans = (ans | check(board, i, j-1, s, k+1));
+        
+        */
+        
+        board[i][j] = ch;
+        return ans;
+        
+    }
+    
+    bool isPresent(vector<vector<char> >& board, string &s)
+    {   
+        int n = board.size();
+        int m = board[0].size();
+        
+        for(int i=0; i<n; i++)
+        {
+            for(int j = 0; j<m; j++)
+            {
+                if(board[i][j] == s[0])
+                {
+                    bool c = check(board, i, j, s, 0);
+                    if(c)
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+	vector<string> wordBoggle(vector<vector<char> >& board, vector<string>& dictionary) {
+	    
+	    vector <string> ans;
+	    
+	    int n = dictionary.size();
+	    
+	    for(int i=0; i<n; i++)
+	    {
+	        if( isPresent(board,dictionary[i]) )
+	        ans.push_back(dictionary[i]);
+	    }
+	    
+	    return ans;
+	}
+};
+
+// { Driver Code Starts.
+
+int main() {
+    int t;
+    cin >> t;
+    while (t--) {
+        int N;
+        cin >> N;
+        vector<string> dictionary;
+        for (int i = 0; i < N; ++i) {
+            string s;
+            cin >> s;
+            dictionary.push_back(s);
+        }
+        
+        int R, C;
+        cin >> R >> C;
+        vector<vector<char> > board(R);
+        for (int i = 0; i < R; i++) {
+            board[i].resize(C);
+            for (int j = 0; j < C; j++) cin >> board[i][j];
+        }
+        Solution obj;
+        vector<string> output = obj.wordBoggle(board, dictionary);
+        if (output.size() == 0)
+            cout << "-1";
+        else {
+            sort(output.begin(), output.end());
+            for (int i = 0; i < output.size(); i++) cout << output[i] << " ";
+        }
+        cout << endl;
+    }
+}
+  // } Driver Code Ends
