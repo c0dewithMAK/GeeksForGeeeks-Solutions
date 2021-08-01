@@ -1,0 +1,58 @@
+// { Driver Code Starts
+#include <bits/stdc++.h>
+
+using namespace std;
+
+
+ // } Driver Code Ends
+class Solution{
+public:
+    // m is maximum of number zeroes allowed to flip
+    // n is size of array
+    int findZeroes(int arr[], int n, int m) {
+        
+        // This is the same as finding maximum contigous subarray with atmost m zeros
+        // Here we perform a modified sliding window technique
+        // We keep increasing window from right side as long as zeroCount <= m
+        // When zeroCount becomes > m, we keep decreasing our window from the left side
+        
+        int pL = 0; // Pointer to the left of current window
+        int pR = 0; // Pointer to the right of current window
+        int maxLen = INT_MIN;
+        int zeroCount = 0;
+        while( pR < n ){
+            if( arr[pR] == 0 ){
+                ++zeroCount;
+            }
+            
+            while( zeroCount > m ){
+                if( arr[pL] == 0 )  // Decrement the number of zeros as well
+                    --zeroCount;
+                ++pL;               // And decrement window from left side
+            }
+            maxLen = max( maxLen, pR - pL + 1 );
+            ++pR;
+        }
+        return maxLen;
+    }  
+};
+
+// { Driver Code Starts.
+
+int main() {
+    int t;
+    cin >> t;
+    while (t--) {
+        int n, i, m;
+        cin >> n;
+        int arr[n];
+        for (i = 0; i < n; i++) {
+            cin >> arr[i];
+        }
+        cin >> m;
+        Solution ob;
+        auto ans = ob.findZeroes(arr, n, m);
+        cout << ans << "\n";
+    }
+    return 0;
+}  // } Driver Code Ends
