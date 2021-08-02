@@ -1,0 +1,74 @@
+// { Driver Code Starts
+#include <bits/stdc++.h>
+using namespace std; 
+
+ // } Driver Code Ends
+
+class Solution{
+    public:
+    int N;
+    
+    // Time = O(2^N) and Space = O(N) but gives TLE
+    bool isSubsUtil_recur(string B, int index, string A, string temp){
+        
+        if( index == N - 1 && temp == A ){
+            return true;
+        }
+        if( index >= N ){
+            return false;
+        }
+        
+        return isSubsUtil_recur(B, index + 1, A, temp + B[index]) ||
+                isSubsUtil_recur(B, index + 1, A, temp);
+    }
+    
+    // Time = O(N) and Space = O(1)
+    bool isSubsUtil_iter(string A, string B){
+        
+        int idx_A = 0; // Index for string A
+        int idx_B = 0; // Index for string B
+        
+        while( idx_B < N && idx_A < N){
+            if( A[idx_A] == B[idx_B] )
+                ++idx_A;
+            ++idx_B;
+        }
+        
+        if( idx_A == A.size() )
+            return true;
+        return false;
+    }
+    
+    bool isSubSequence(string A, string B) 
+    {
+        N = B.size();
+        
+        // Pick and Don't Pick Concept (Wrote this code for knowledge purposes)
+        // This method basically generates all subsequence and finally compares each of them
+        // to A and returns result accordingly. Gives TLE as it can be solved in O(N);
+        // return isSubsUtil_recur(B, 0, A, "");
+        
+        // Iterative method in O(N)
+        return isSubsUtil_iter(A, B);
+    }
+};
+
+// { Driver Code Starts.
+int main() 
+{ 
+    int t;
+    scanf("%d",&t);
+    while(t--)
+    {
+        string A,B;
+        cin>>A;
+        cin>>B;  
+        Solution ob;
+        if(ob.isSubSequence(A,B))
+            cout<<"1"<<endl;
+        else
+            cout<<"0"<<endl;
+    }
+    return 0; 
+} 
+  // } Driver Code Ends
