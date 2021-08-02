@@ -1,0 +1,27 @@
+class Solution {
+public:
+    /**
+     * @param nums: a list of integer
+     * @return: return a integer, denote  the maximum number of consecutive 1s
+     */
+    int findMaxConsecutiveOnes(vector<int> &nums) {
+        int zeroCount = 0;
+        int maxLen = 0;
+        int pL = 0;
+        int pR = 0;
+        while( pR < nums.size() ){
+            if( nums[pR] == 0 )
+                ++zeroCount;
+
+            while( zeroCount > 1 ){
+                if( nums[pL] == 0 )
+                    --zeroCount;
+                ++pL;
+            }
+
+            maxLen = max( maxLen, pR - pL + 1);
+            ++pR;
+        }
+        return maxLen;
+    }
+};
