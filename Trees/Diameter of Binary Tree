@@ -93,8 +93,8 @@ struct Node
 
 class Solution {
   public:
-  
-    // Utility function for getting height os a tree
+    // Utility function for getting height of this sub-tree rooted at 'node'
+    // Takes O(n) time
     int getHeight(Node *node){
         
         if(!node)
@@ -107,8 +107,8 @@ class Solution {
         
     }
     
-    // Function to return the diameter of a Binary Tree.
-    int diameter(Node* root) {
+    // Method 1 : Time = O(n^2)
+    int getDiameterUtil(Node *root){
         
         if(!root)
             return 0;
@@ -127,8 +127,52 @@ class Solution {
         
         // Final diameter is the maximum of current tree's diameter and diameters
         // of subtrees
-        return max(lHeight+rHeight+1, max(lDiameter, rDiameter));
+        return max(lHeight+rHeight+1, max(lDiameter, rDiameter));    
+    }
+    
+    // Method 2 : Efficient and much better, takes O(n) time - A Dynamic Programming Approach
+    int getDiameterUtil_DP(Node *root, int& res){
         
+        // Base Condition :
+        if( !root )
+            return 0;
+            
+        // Hypothesis :
+        int lDia = getDiameterUtil_DP(root->left, res);
+        int rDia = getDiameterUtil_DP(root->right, res);
+        
+        // Induction : Here we have 2 choices -
+        // Either we include current 'root' in our longest path
+        // Or pass on root's subtree lDia and rDia values to root's parent and not consider
+        // it as root of the tree having longest path
+        
+        // Length of path when we don't include root
+        int temp = 1 + max( lDia, rDia ); 
+        
+        // Length of path when we do include root, hence the 2nd parameter below in max()
+        int ans = max( temp, 1 + lDia + rDia );
+        
+        // Finally update the res variable accordingly
+        res = max( res, ans );
+        
+        // Also, pass-on this temp value to root's parent
+        return temp;
+    }
+    
+    // Function to return the diameter of a Binary Tree.
+    int diameter(Node* root) {
+        
+        if( !root )
+            return 0;
+            
+        // Method 1 : Takes O(n^2) time as for each node height is calculated which in itself
+        // is a O(n) time taking task, NOT EFFICIENT
+        // return getDiameterUtil(root);
+        
+        // Method 2 : Using Recursive Top-Down DP
+        int res = 0;
+        getDiameterUtil_DP(root, res);
+        return res;
     }
 };
 
