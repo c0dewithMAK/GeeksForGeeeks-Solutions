@@ -1,0 +1,137 @@
+// { Driver Code Starts
+#include<bits/stdc++.h>
+using namespace std;
+
+ // } Driver Code Ends
+
+
+class Solution
+{
+    public:
+    int memo[100001];
+    int lis_recur(int n, int arr[], int &res){
+        
+        // Base Condition : A single element is itself a LIS of length 1
+        if( n == 1 )
+            return 1;
+            
+        int currMax = 0;
+        int maxTillHere = 1;
+        
+        for(int i = 1; i < n; ++i){
+            currMax = lis_recur(i, arr, res);
+            if( ( arr[i-1] < arr[n-1] ) && ( 1 + currMax > maxTillHere ) )
+                maxTillHere = 1 + currMax;
+        }
+        
+        // Update final res also
+        res = max( res, maxTillHere );
+        
+        // Finally return LIS length for arr[n-1]
+        return maxTillHere;
+    }
+    
+    // Memoization
+    int lis_memo(int n, int arr[], int &res){
+        
+        // Base Condition : A single element is itself a LIS of length 1
+        if( n == 1 )
+            return ( memo[n] = 1 );
+            
+        if( memo[n] != -1 )
+            return memo[n];
+            
+        int currMax = 0;
+        int maxTillHere = 1;
+        
+        for(int i = 1; i < n; ++i){
+            currMax = lis_recur(i, arr, res);
+            if( ( arr[i-1] < arr[n-1] ) && ( 1 + currMax > maxTillHere ) )
+                maxTillHere = 1 + currMax;
+        }
+        
+        // Update final res also
+        res = max( res, maxTillHere );
+        
+        // Finally return LIS length for arr[n-1]
+        return ( memo[n] = maxTillHere );
+    }
+    
+    // Method 3 : Time = O(n^2) and Space = O(n)
+    int lis_iter(int n, int arr[]){
+        
+        int lis[n];
+        lis[0] = 1;
+        for(int i = 1; i < n; ++i){
+            lis[i] = 1;
+            for(int j = 0; j < i; ++j){
+                if( arr[j] < arr[i] && ( 1 + lis[j] > lis[i]) )
+                    lis[i] = 1 + lis[j];
+            }
+        }
+        return *max_element(lis, lis + n);
+    }
+    
+    // Best Method - Using Binary Search
+    int lis_bSearch(int n, int arr[]){
+        
+        vector<int> seq;
+        seq.push_back(arr[0]);
+        for(int i = 1; i < n; ++i){
+            
+            if( seq.back() < arr[i] )
+                seq.push_back(arr[i]);
+            else{
+                // Find the next higher element in sequence and replace it with arr[i]
+                int idx = lower_bound(seq.begin(), seq.end(), arr[i]) - seq.begin();
+                seq[idx] = arr[i];
+            }
+        }
+        
+        // Finally return this size of sequence as it will be maximum
+        return seq.size();
+    }
+    
+    //Function to find length of longest increasing subsequence.
+    int longestSubsequence(int n, int a[])
+    {
+        // Method 1 : Using Recursion
+        // int res = INT_MIN; 
+        // int val = lis_recur(n, a, res);
+        // return ( res != INT_MIN ) ? res : val;
+        
+        // Method 2 : Using Memoization
+        // memset(memo, -1, sizeof(memo));
+        // int res = INT_MIN;
+        // int val = lis_memo(n, a, res);
+        // return ( res != INT_MIN ) ? res : val;
+        
+        // Method 3 : Using Iteration O(n*n)
+        // return lis_iter(n, a);
+        
+        // Method 4 : Using Binary Search (BEST APPROACH)
+        return lis_bSearch(n, a);
+    }
+};
+
+// { Driver Code Starts.
+int main()
+{
+    //taking total testcases
+    int t,n;
+    cin>>t;
+    while(t--)
+    {
+        //taking size of array
+        cin>>n;
+        int a[n];
+        
+        //inserting elements to the array
+        for(int i=0;i<n;i++)
+            cin>>a[i];
+        Solution ob;
+        //calling method longestSubsequence()
+        cout << ob.longestSubsequence(n, a) << endl;
+    }
+}
+  // } Driver Code Ends
