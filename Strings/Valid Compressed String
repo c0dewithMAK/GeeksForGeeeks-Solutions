@@ -1,0 +1,51 @@
+// { Driver Code Starts
+#include <bits/stdc++.h>
+using namespace std;
+
+
+ // } Driver Code Ends
+//User function Template for C++
+
+class Solution {
+  public:
+    int checkCompressed(string S, string T) {
+        
+        int i = 0; // Index variable for S
+        for(int j = 0; j < T.size(); ++j){ // j is index variable for T
+    
+            if( isalpha( T[j] ) ){
+                if( i < S.size() && S[i] != T[j] )
+                    return 0;
+                ++i;
+            }
+            else{
+                int num = 0;
+                while( j < T.size() && !isalpha( T[j] ) ){
+                    num = (num*10) + (T[j] - '0');
+                    ++j;
+                }
+                --j;
+                i += num;
+            }
+        }
+
+        return ( i == S.size() );
+    }
+};
+
+
+// { Driver Code Starts.
+
+int main() {
+    int t;
+    cin >> t;
+    while (t--) {
+        string S,T;
+        
+        cin>>S>>T;
+
+        Solution ob;
+        cout << ob.checkCompressed(S,T) << endl;
+    }
+    return 0;
+}  // } Driver Code Ends
