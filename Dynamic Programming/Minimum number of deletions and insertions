@@ -1,0 +1,94 @@
+// { Driver Code Starts
+#include <bits/stdc++.h>
+using namespace std;
+
+ // } Driver Code Ends
+class Solution{
+	public:
+	int memo[1001][1001];
+    
+    // Simple Recursion
+    int lcs_recur(int n, int m, string& s1, string& s2){
+        
+        if( n == 0 || m == 0 )
+            return 0;
+        
+        if( s1[n-1] == s2[m-1] )
+            return 1 + lcs_recur(n-1, m-1, s1, s2);
+        else
+            return max( lcs_recur(n-1, m, s1, s2), (lcs_recur(n, m-1, s1, s2)) );
+    }
+
+    // Recursion + Memoization (Top-Down)
+    int lcs_memo(int n, int m, string& s1, string& s2){
+        
+        if( n == 0 || m == 0 )
+            return ( memo[n][m] = 0 );
+        
+        if( memo[n][m] != -1 )
+            return memo[n][m];
+            
+        if( s1[n-1] == s2[m-1] )
+            return ( memo[n][m] = 1 + lcs_memo(n-1, m-1, s1, s2) );
+        else
+            return ( memo[n][m] = max( lcs_memo(n-1, m, s1, s2), (lcs_memo(n, m-1, s1, s2))));
+    }
+    
+    // Bottom Up Tabulation - Best Method
+    int lcs_bottomUp(int n, int m, string& s1, string& s2){
+        
+        int dp[n+1][m+1];
+        memset(dp, -1, sizeof(dp));
+        for(int i = 0; i <= n; ++i){
+            for(int j = 0; j <= m; ++j){
+                if( i == 0 || j == 0 )
+                    dp[i][j] = 0;
+                else if( s1[i-1] == s2[j-1] )
+                    dp[i][j] = 1 + dp[i-1][j-1];
+                else
+                    dp[i][j] = max( dp[i-1][j], dp[i][j-1] );
+            }
+        }
+        return dp[n][m];
+    }
+    
+	int minOperations(string str1, string str2) 
+	{ 
+	    int n = str1.size();
+	    int m = str2.size();
+	    
+	    // Method 1 : Using recursion (TLE)
+	    // int lcs = lcs_recur(n, m, str1, str2);
+	    // return ( (n - lcs) + (m - lcs) );
+	    
+	    // Method 2 : Memoization
+	    // memset(memo, -1, sizeof(memo));
+	    // int lcs = lcs_memo(n, m, str1, str2);
+	    // return ( n - lcs + m - lcs );
+	    
+	    // Method 3 : Bottom Up Tabulation
+	    int lcs = lcs_bottomUp(n, m, str1, str2);
+	    return ( n - lcs + m - lcs );
+	} 
+};
+
+// { Driver Code Starts.
+int main() 
+{
+   	
+   
+   	int t;
+    cin >> t;
+    while (t--)
+    {
+        string s1, s2;
+        cin >> s1 >> s2;
+
+	    Solution ob;
+	    cout << ob.minOperations(s1, s2) << "\n";
+	     
+    }
+    return 0;
+}
+
+  // } Driver Code Ends
