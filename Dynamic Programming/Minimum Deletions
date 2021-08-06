@@ -1,0 +1,91 @@
+// { Driver Code Starts
+#include <bits/stdc++.h>
+using namespace std;
+
+
+ // } Driver Code Ends
+//User function template for C++
+
+class Solution{
+  public:
+  int memo[1001][1001];
+    
+    // Time = O(2^(n+m)) and Space = O(n+m), basically here n = m
+    int lcs_recur(int n, int m, string& a, string& b){
+        
+        if( n == 0 || m == 0 )
+            return 0;
+            
+        if( a[n-1] == b[m-1] ){
+            return ( 1 + lcs_recur(n-1, m-1, a, b) );
+        }
+        else{
+            return max(lcs_recur(n, m-1, a, b), lcs_recur(n-1, m, a, b));
+        }
+    }
+    
+    // Time = O(n*m) and Space = O(n*m) + O(n+m)
+    int lcs_memo(int n, int m, string& a, string& b){
+        
+        if( n == 0 || m == 0 )
+            return ( memo[n][m] = 0 );
+            
+        if( memo[n][m] != -1 )
+            return memo[n][m];
+            
+        if( a[n-1] == b[m-1] ){
+            return ( memo[n][m] = 1 + lcs_memo(n-1, m-1, a, b) );
+        }
+        else{
+            return ( memo[n][m] = max(lcs_memo(n, m-1, a, b), lcs_memo(n-1, m, a, b)) );
+        }
+    }
+    
+    // Time = O(n*m) and Space = O(n*m)
+    int lcs_bottomUp(int n, int m, string &a, string &b){
+        
+        int dp[n+1][m+1];
+            
+        for(int i = 0; i <= n; ++i){
+            for(int j = 0; j <= m; ++j){
+                if( i == 0 || j ==0 )
+                    dp[i][j] = 0;
+                else if( a[i-1] == b[j-1] )
+                    dp[i][j] = 1 + dp[i-1][j-1];
+                else
+                    dp[i][j] = max( dp[i-1][j], dp[i][j-1] );
+            }
+        }
+        
+        return dp[n][m];
+    }
+    
+    int minimumNumberOfDeletions(string S) { 
+        
+        string T = S;
+        reverse(T.begin(), T.end());
+        
+        // Method 1 : Using recursion (TLE)
+        // return ( S.size() - lcs_recur(S.size(), T.size(), S, T) );
+        
+        // Method 2 : Memoization / Top-Down
+        // memset(memo, -1, sizeof(memo));
+        // return ( S.size() - lcs_memo(S.size(), T.size(), S, T) );
+        
+        // Method 3 : Bottom-Up Tabulation DP
+        return ( S.size() - lcs_bottomUp(S.size(), T.size(), S, T) );
+    } 
+};
+
+// { Driver Code Starts.
+int main(){
+    int t;
+    cin >> t;
+    while(t--){
+        string S;
+        cin >> S;
+        Solution obj;
+        cout << obj.minimumNumberOfDeletions(S) << endl;
+    }
+    return 0;
+}  // } Driver Code Ends
