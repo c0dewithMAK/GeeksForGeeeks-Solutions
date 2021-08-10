@@ -1,0 +1,80 @@
+class Solution {
+  public:
+    int memo[101][101];
+    
+    int longestPalinUtil_memo(int start, int end, string& s){
+        
+        if( start > end ){
+            return ( memo[start][end] = 0 );
+        }
+        
+        if( start == end )
+            return ( memo[start][end] = 1 );
+        
+        if( memo[start][end] != -1 )
+            return memo[start][end];
+        
+        if( s[start] == s[end] ){
+            int remLen = end - start - 1;
+            if( remLen == longestPalinUtil_memo( start + 1, end - 1, s) )
+                return ( memo[start][end] = ( 2 + remLen ) );
+        }
+        return memo[start][end] = max( longestPalinUtil_memo( start + 1, end, s), 
+                    longestPalinUtil_memo( start, end - 1, s) );
+    }
+    
+    int longestPalinUtil(int start, int end, string& s){
+        
+        if( start > end ){
+            return 0;
+        }
+        
+        if( start == end )
+            return 1;
+        
+        if( s[start] == s[end] ){
+            int remLen = end - start - 1;
+            if( remLen == longestPalinUtil( start + 1, end - 1, s) )
+                return ( 2 + remLen );
+        }
+        return max( longestPalinUtil( start + 1, end, s), 
+                    longestPalinUtil( start, end - 1, s) );
+    }
+    
+    int longestPalinUtil_bottomUp(int n, string& s){
+        
+        if( s.size() == 0 ) return 0;
+        bool dp[n][n];
+        memset(dp, false, sizeof(dp));
+        int maxLen = 1; // In worst case, minimum length of palindrome would always be 1
+        // A single character is itself always a palindrome
+        for(int i = 0; i <= n; ++i)
+            dp[i][i] = true;
+        
+        for(int i = n - 2; i >= 0; --i){
+            for(int j = i + 1; j < n; ++j){
+                if( s[i] == s[j] ){
+                    if( dp[i + 1][j - 1] || j - i == 1 ){
+                        // We are doing j - i == 1 also because sometimes [i+1][j-1] may land us
+                        // onto a 'False' entry cell in dp array and we have to check for
+                        // adjacent characters i.e., for length 2
+                        dp[i][j] = true;
+                        maxLen = max( maxLen, j - i + 1);
+                    }
+                }
+            }
+        }
+        return maxLen;
+    }
+  
+    int longestPalin (string S) {
+        // Method 1 : Using recursion
+        cout << "LPalinSS = " << longestPalinUtil(0, S.size()-1, S) << "\n";
+        // Method 2 : Top-Down Memoization
+        memset( memo, -1, sizeof(memo) );
+        cout << "LPalinSS = " << longestPalinUtil_memo(0, S.size()-1, S) << "\n";
+        // Method 3 : Using bottom Up tabulation
+        cout << "LPalinSS = " << longestPalinUtil_bottomUp(S.size(), S) << "\n";
+        return "N";
+    }
+};
