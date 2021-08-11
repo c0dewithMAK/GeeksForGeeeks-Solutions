@@ -1,0 +1,35 @@
+// { Driver Code Starts
+#include <bits/stdc++.h>
+using namespace std;
+
+ // } Driver Code Ends
+class Solution{
+    public:
+    long long nearestPowerOf2(long long N){
+        
+        if( N == 1 || floor(log2(N)) == ceil(log2(N)) )
+            return N;
+            
+        long long temp_N = N;
+        long long res = 1;
+        while( temp_N > 1 ){
+            temp_N >>= 1;
+            res = res << 1;
+        }
+        res = res << 1;
+        return res;
+    }
+};
+
+// { Driver Code Starts.
+int main(){
+    int t;
+    cin>>t;
+    while(t--)
+    {
+        long long N;
+        cin>>N;
+        Solution ob;
+        cout<<ob.nearestPowerOf2(N)<<"\n";
+    }
+}  // } Driver Code Ends
