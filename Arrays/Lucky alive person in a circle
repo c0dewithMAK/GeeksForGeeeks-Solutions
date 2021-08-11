@@ -1,0 +1,58 @@
+// { Driver Code Starts
+#include<bits/stdc++.h>
+using namespace std;
+
+ // } Driver Code Ends
+class Solution{
+public:
+    int find(int N){
+        // This question has a specific pattern, on seeing the pattern from N = to N = 16,
+        // it's seen that if N is power of 2 always person 1 is last remaining with sword
+        // Else, the person number keeps increasing by 2 from the previous smallest power of 2
+        // Ex - N = 11, so last power of 2 is 8 and 11-8 = 3
+        // so person will be 1, 3, 5. person 5 by increments of 2 and third number in this seq
+        // -uence
+        
+        if( N == 1 )
+            return 1;
+        
+        // If N is a power of 2 then logN should be an integer and to find whether logN is an
+        // integer ceil and floor of logN should give same integer value
+        if( ceil(log2(N)) == floor(log2(N)) )
+            return 1;
+        
+        // If not then we find MSB of N to find previous smaller power of 2   
+        int temp_N = N;
+        int rightShifts = 0;
+        while( temp_N > 1 ){
+            ++rightShifts;
+            temp_N = temp_N >> 1;
+        }
+        
+        int maxPowerOfTwo = 1;
+        while( rightShifts-- > 0 )
+            maxPowerOfTwo = maxPowerOfTwo << 1;
+            
+        int diff = N - maxPowerOfTwo; // This gives the number of time additions to be performed
+        int person = 1;
+        while( diff-- > 0 )
+            person += 2;
+            
+        return person;
+    }
+};
+
+// { Driver Code Starts.
+int main() 
+{ 
+    int t;
+    cin>>t;
+    while(t--)
+    {
+        int N;
+        cin>>N;
+        Solution ob;
+        cout << ob.find(N) << endl;
+    }
+    return 0; 
+}  // } Driver Code Ends
