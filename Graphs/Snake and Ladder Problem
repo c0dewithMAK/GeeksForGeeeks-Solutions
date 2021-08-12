@@ -14,8 +14,11 @@ public:
     int minThrow(int N, int arr[]){
         // Create the board first
         int board[BOARD_SIZE + 1];
-        for(int i = 1; i <= BOARD_SIZE; ++i)
+        bool visited[BOARD_SIZE + 1];
+        for(int i = 1; i <= BOARD_SIZE; ++i){
             board[i] = i;
+            visited[i] = false;
+        }
         
         //Assigning the values of array given (snakes or ladder)    
         for(int i = 0; i < 2*N; i += 2)
@@ -29,13 +32,15 @@ public:
             pair<int, int> f = q.front();
             q.pop();
             
+            visited[f.first] = true;
             // We reached the destination
             if( f.first == BOARD_SIZE )
                 return f.second;
             
             // Roll the dice for all possible outcomes for dice
             for(int steps = 1; steps <= MAX_STEPS && (f.first + steps <= BOARD_SIZE); ++steps){
-                q.push({board[f.first + steps], f.second + 1});
+                if( !visited[f.first + steps] )
+                    q.push({board[f.first + steps], f.second + 1});
             }
         }
         
