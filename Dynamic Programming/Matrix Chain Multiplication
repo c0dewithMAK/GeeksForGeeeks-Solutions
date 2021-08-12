@@ -1,0 +1,86 @@
+// { Driver Code Starts
+// Initial Template for C++
+
+#include <bits/stdc++.h>
+using namespace std;
+
+ // } Driver Code Ends
+// User function Template for C++
+
+class Solution{
+public:
+    int memo[100][100];
+    int MCM_recur(int i, int j, int arr[]){
+        
+        if( i >= j ){
+            return 0; // No matrix can be formed from one element or 0 elements
+        }
+            
+        int minCost = INT_MAX;
+        
+        for(int k = i; k <= j - 1; ++k){
+            int c1 = MCM_recur(i, k, arr);
+            int c2 = arr[i-1] * arr[k] * arr[j];
+            int c3 = MCM_recur(k + 1, j, arr);
+            int tempCost = c1 + c2 + c3;
+            minCost = min( minCost, tempCost );
+        }
+        
+        return minCost;
+    }
+    
+    int MCM_memo(int i, int j, int arr[]){
+        
+        if( i >= j ){
+            return ( memo[i][j] = 0 ); // No matrix can be formed from one element or 0 elements
+        }
+        
+        if( memo[i][j] != -1 )
+            return memo[i][j];
+            
+        int minCost = INT_MAX;
+        int tempCost;
+        for(int k = i; k <= j - 1; ++k){
+            if( memo[i][k] == -1 )
+                memo[i][k] = MCM_memo(i, k, arr);
+            int currentCost = arr[i-1] * arr[k] * arr[j];
+            if( memo[k+1][j] == -1 )
+                memo[k+1][j] = MCM_memo(k + 1, j, arr);
+            tempCost = memo[i][k] + currentCost + memo[k+1][j];
+            minCost = min( minCost, tempCost );
+        }
+        
+        return ( memo[i][j] = minCost );
+    }
+    
+    int matrixMultiplication(int N, int arr[])
+    {
+        if( N == 2 )
+            return 0;
+            
+        // Method 1 : Recursive
+        // return MCM_recur(1, N - 1, arr);
+        
+        // Method 2 : Top-Down Memoization
+        memset(memo, -1, sizeof(memo));
+        return MCM_memo(1, N - 1, arr);
+    }
+};
+
+// { Driver Code Starts.
+
+int main(){
+    int t;
+    cin>>t;
+    while(t--){
+        int N;
+        cin>>N;
+        int arr[N];
+        for(int i = 0;i < N;i++)
+            cin>>arr[i];
+        
+        Solution ob;
+        cout<<ob.matrixMultiplication(N, arr)<<endl;
+    }
+    return 0;
+}  // } Driver Code Ends
