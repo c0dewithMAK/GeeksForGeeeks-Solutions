@@ -1,0 +1,62 @@
+// { Driver Code Starts
+// Initial Template for C++
+
+#include <bits/stdc++.h>
+using namespace std;
+
+ // } Driver Code Ends
+// User function Template for C++
+
+#define BOARD_SIZE 30
+#define MAX_STEPS 6
+class Solution{
+public:
+    int minThrow(int N, int arr[]){
+        // Create the board first
+        int board[BOARD_SIZE + 1];
+        for(int i = 1; i <= BOARD_SIZE; ++i)
+            board[i] = i;
+        
+        //Assigning the values of array given (snakes or ladder)    
+        for(int i = 0; i < 2*N; i += 2)
+            board[arr[i]] = board[arr[i + 1]];
+        
+        //Queue for storing the current index and the jumps that are being made
+        queue<pair<int, int>> q;
+        q.push({1,0});
+        
+        while( !q.empty() ){
+            pair<int, int> f = q.front();
+            q.pop();
+            
+            // We reached the destination
+            if( f.first == BOARD_SIZE )
+                return f.second;
+            
+            // Roll the dice for all possible outcomes for dice
+            for(int steps = 1; steps <= MAX_STEPS && (f.first + steps <= BOARD_SIZE); ++steps){
+                q.push({board[f.first + steps], f.second + 1});
+            }
+        }
+        
+        return 0;
+    }
+};
+
+// { Driver Code Starts.
+
+int main(){
+    int t;
+    cin>>t;
+    while(t--){
+        int N;
+        cin>>N;
+        int arr[2*N];
+        for(int i = 0;i < 2*N;i++)
+            cin>>arr[i];
+        
+        Solution ob;
+        cout<<ob.minThrow(N, arr)<<"\n";
+    }
+    return 0;
+}  // } Driver Code Ends
