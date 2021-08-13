@@ -1,0 +1,222 @@
+// { Driver Code Starts
+// Initial Template for C++
+
+#include <bits/stdc++.h>
+using namespace std;
+
+ // } Driver Code Ends
+// User function Template for C++
+
+class Solution{
+public:
+    int mod = 1003;
+    unordered_map<string, int> memo;
+    int T[201][201];
+    int F[201][201];
+    
+    int countUtil(int i, int j, string& s, char isTrue){
+        
+        if( i > j )
+            return 0;
+        
+        if( i == j ){
+            if( isTrue == 'T' )
+                return ( s[i] == 'T' ) ? 1 : 0;
+            else
+                return ( s[i] == 'F' ) ? 1 : 0;
+        }
+    
+        int ans = 0;
+        for(int k = i + 1; k <= j - 1; k = k + 2){
+            int lT = countUtil(i, k - 1, s, 'T');
+            int lF = countUtil(i, k - 1, s, 'F');
+            int rT = countUtil(k + 1, j, s, 'T');
+            int rF = countUtil(k + 1, j, s, 'F');
+                        
+            if( s[k] == '|' ){
+                if( isTrue == 'T' )
+                    ans += (lT * rF) + (lF * rT) + (lT * rT);
+                else
+                    ans += (lF * rF);
+            }
+            else if( s[k] == '&' ){
+                if( isTrue == 'T' )
+                    ans += (lT * rT);
+                else
+                    ans += (lT * rF) + (lF * rT) + (lF * rF);
+            }
+            else if( s[k] == '^' ){
+                if( isTrue == 'T' )
+                    ans += (lT * rF) + (lF * rT);
+                else
+                    ans += (lT * rT) + (lF * rF);
+            }
+        }
+        return ans % mod ;
+    }
+    
+    int countUtil_memoMap(int i, int j, string& s, char isTrue){
+        
+        if( i > j )
+            return 0;
+        
+        string pat = to_string(i) + " " + to_string(j) + " " + to_string(isTrue);
+        if( memo.find(pat) != memo.end() ){
+            return memo[pat];
+        }
+            
+        if( i == j ){
+            if( isTrue == 'T' ){
+                return memo[pat] = ( s[i] == 'T' ) ? 1 : 0;
+            }
+            else
+                return memo[pat] = ( s[i] == 'F' ) ? 1 : 0;
+        }
+        
+        int lT, lF, rT, rF;
+        int ans = 0;
+        for(int k = i + 1; k <= j - 1; k = k + 2){
+            string patLT = to_string(i) + " " + to_string(k - 1) + " " + "T";
+            string patLF = to_string(i) + " " + to_string(k - 1) + " " + "F";
+            string patRT = to_string(k + 1) + " " + to_string(j) + " " + "T";
+            string patRF = to_string(k + 1) + " " + to_string(j) + " " + "F";
+            if( memo.find(patLT) == memo.end() )
+                lT = memo[patLT] = countUtil_memoMap(i, k - 1, s, 'T');
+            else
+                lT = memo[patLT];
+            
+            if( memo.find(patLF) == memo.end() )
+                lF = memo[patLF] = countUtil_memoMap(i, k - 1, s, 'F');
+            else
+                lF = memo[patLF];
+            
+            if( memo.find(patRT) == memo.end() )
+                rT = memo[patRT] = countUtil_memoMap(k + 1, j, s, 'T');
+            else
+                rT = memo[patRT];
+
+            if( memo.find(patRF) == memo.end() )
+                rF = memo[patRF] = countUtil_memoMap(k + 1, j, s, 'F');
+            else
+                rF = memo[patRF];
+                        
+            if( s[k] == '|' ){
+                if( isTrue == 'T' )
+                    ans += (lT * rF) + (lF * rT) + (lT * rT);
+                else
+                    ans += (lF * rF);
+            }
+            else if( s[k] == '&' ){
+                if( isTrue == 'T' )
+                    ans += (lT * rT);
+                else
+                    ans += (lT * rF) + (lF * rT) + (lF * rF);
+            }
+            else if( s[k] == '^' ){
+                if( isTrue == 'T' )
+                    ans += (lT * rF) + (lF * rT);
+                else
+                    ans += (lT * rT) + (lF * rF);
+            }
+        }
+        return memo[pat] = ans % mod ;
+    }
+    
+    int countUtil_memo(int i, int j, string& s, char isTrue){
+        
+        if( i > j )
+            return 0;
+            
+        if( isTrue == 'T' && T[i][j] != -1 )
+            return T[i][j];
+        else if( isTrue == 'F' && F[i][j] != -1 )
+            return F[i][j];
+        
+        if( i == j ){
+            if( isTrue == 'T' )
+                return T[i][j] = ( s[i] == 'T' ) ? 1 : 0;
+            else
+                return F[i][j] = ( s[i] == 'F' ) ? 1 : 0;
+        }
+    
+        int ans = 0;
+        int lT, lF, rT, rF;
+        for(int k = i + 1; k <= j - 1; k = k + 2){
+            if( T[i][k-1] == -1 )
+                lT = countUtil_memo(i, k - 1, s, 'T');
+            else
+                lT = T[i][k-1];
+                
+            if( F[i][k-1] == -1 )
+                lF = countUtil_memo(i, k - 1, s, 'F');
+            else
+                lF = F[i][k-1];
+                
+            if( T[k+1][j] == -1 )
+                rT = countUtil_memo(k + 1, j, s, 'T');
+            else
+                rT = T[k+1][j];
+                
+            if( F[k+1][j] == -1 )
+                rF = countUtil_memo(k + 1, j, s, 'F');
+            else
+                rF = F[k+1][j];
+                        
+            if( s[k] == '|' ){
+                if( isTrue == 'T' )
+                    ans += (lT * rF) + (lF * rT) + (lT * rT);
+                else
+                    ans += (lF * rF);
+            }
+            else if( s[k] == '&' ){
+                if( isTrue == 'T' )
+                    ans += (lT * rT);
+                else
+                    ans += (lT * rF) + (lF * rT) + (lF * rF);
+            }
+            else if( s[k] == '^' ){
+                if( isTrue == 'T' )
+                    ans += (lT * rF) + (lF * rT);
+                else
+                    ans += (lT * rT) + (lF * rF);
+            }
+        }
+        if( isTrue == 'T' )
+            return T[i][j] = ans % mod;
+        else
+            return F[i][j] = ans % mod;
+    }
+    
+    int countWays(int N, string S){
+        
+        // Method 1 : Recursive approach
+        // return countUtil(0, N - 1, S, 'T');
+        
+        // Method 2 : Memoization using map ( gives TLE as find() takes O(n) time in worst case
+        // as map's keys are strings and strings are matched character by character )
+        //memo.clear();
+        //return countUtil_memoMap(0, N - 1, S, 'T');
+        
+        // Method 3 : Memoization Top-Down using two 2D arrays for True and False
+        memset(T, -1, sizeof(T));
+        memset(F, -1, sizeof(F));
+        return countUtil_memo(0, N - 1, S, 'T');
+    }
+};
+
+// { Driver Code Starts.
+
+int main(){
+    int t;
+    cin>>t;
+    while(t--){
+        int N;
+        cin>>N;
+        string S;
+        cin>>S;
+        
+        Solution ob;
+        cout<<ob.countWays(N, S)<<"\n";
+    }
+    return 0;
+}  // } Driver Code Ends
