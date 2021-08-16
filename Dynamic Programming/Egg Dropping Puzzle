@@ -1,0 +1,91 @@
+// { Driver Code Starts
+#include<bits/stdc++.h>
+using namespace std;
+
+ // } Driver Code Ends
+
+class Solution
+{
+    public:
+    int memo[201][201];
+    // Recursive Method (TLE)
+    int eggDrop_recur(int e, int f){
+        
+        if( f == 0 || f == 1 )
+            return f;
+            
+        if( e == 0 )    return 0; // No eggs, no trials
+        if( e == 1 )    return f; // Worst case scenario to be considered
+        
+        int minTrials = INT_MAX;
+        for(int k = 1; k <= f; ++k){
+            // Partition the building at kth floor
+            int kthTrials = 1 + max( eggDrop_recur(e - 1, k - 1), eggDrop_recur(e, f - k) );
+            minTrials = min( minTrials, kthTrials );
+        }
+        
+        return minTrials;
+    }
+    
+    // Memoized Version
+    int eggDrop_memo(int e, int f){
+        
+        if( memo[e][f] != -1 )
+            return memo[e][f];
+            
+        if( f == 0 || f == 1 )
+            return ( memo[e][f] = f );
+            
+        if( e == 0 )    return ( memo[e][f] = 0 ); // No eggs, no trials
+        if( e == 1 )    return ( memo[e][f] = f ); // Worst case scenario to be considered
+        
+        int minTrials = INT_MAX;
+        int eggBreak, eggNoBreak;
+        for(int k = 1; k <= f; ++k){
+            // Partition the building at kth floor
+            
+            if( memo[e - 1][k - 1] == -1 )
+                eggBreak = eggDrop_memo(e - 1, k - 1);
+            
+            if( memo[e][f - k] == -1 )
+                eggNoBreak = eggDrop_memo(e, f - k);
+            
+            int kthTrials = 1 + max( memo[e - 1][k - 1], memo[e][f - k] );
+            minTrials = min( minTrials, kthTrials );
+        }
+        
+        return ( memo[e][f] = minTrials );
+    }
+    
+    //Function to find minimum number of attempts needed in 
+    //order to find the critical floor.
+    int eggDrop(int n, int k) 
+    {
+        // Question is also based on MCM pattern
+        // Method 1 : Using recursion
+        // return eggDrop_recur(n, k);
+        
+        // Method 2 : Using memoization
+        memset(memo, -1, sizeof(memo));
+        return eggDrop_memo(n, k);
+    }
+};
+
+// { Driver Code Starts.
+int main()
+{
+    //taking total testcases
+    int t;
+    cin>>t;
+    while(t--)
+    {
+        //taking eggs and floors count
+        int n, k;
+        cin>>n>>k;
+        Solution ob;
+        //calling function eggDrop()
+        cout<<ob.eggDrop(n, k)<<endl;
+    }
+    return 0;
+}
+  // } Driver Code Ends
