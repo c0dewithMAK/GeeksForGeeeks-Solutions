@@ -1,0 +1,89 @@
+// { Driver Code Starts
+#include<bits/stdc++.h>
+using namespace std;
+
+ // } Driver Code Ends
+class Solution
+{
+    public:
+    int R;
+    int C;
+    vector<vector<int>> matrix;
+    vector<pair<int, int>> move = {{0, -1}, {0, 1}, {-1, 0}, {1, 0}};
+    
+    
+    bool isValid(int r, int c, vector<vector<bool>>& visited){
+        if( r < 0 || c < 0 || r >= R || c >= C)
+            return false;
+        else if( visited[r][c] )
+            return false;
+        return true;
+    }
+    
+    int minCostUtil(int r, int c, vector<vector<int>>& grid, vector<vector<bool>>& visited){
+        
+        priority_queue< pair<int, pair<int, int>>, vector<pair<int, pair<int, int>>>,
+                        greater<pair<int, pair<int, int>>> > pq;
+
+        pq.push({grid[0][0], {r, c}});
+        int minCost = 0;
+        while( !pq.empty() ){
+            
+            auto f = pq.top();
+            pq.pop();
+            
+            if( visited[f.second.first][f.second.second] )
+                continue;
+                
+            visited[f.second.first][f.second.second] = true;
+            minCost = f.first;
+            
+            for( pair<int, int> v : move ){
+                int i = f.second.first + v.first;
+                int j = f.second.second + v.second;
+                if( isValid(i, j, visited) && ( minCost + grid[i][j] < matrix[i][j] ) ){
+                    matrix[i][j] = minCost + grid[i][j];
+                    
+                    if( !visited[i][j] ){
+                        pq.push( { matrix[i][j], { i, j } });
+                    }
+                }    
+            }
+        }
+        return matrix[R-1][C-1];
+    }
+    
+    //Function to return the minimum cost to react at bottom
+	//right cell from top left cell.
+    int minimumCostPath(vector<vector<int>>& grid) 
+    {
+        R = grid.size();
+        C = grid[0].size();
+        if( R == 1 && C == 1 )
+            return grid[0][0];
+        vector<vector<bool>> visited( R, vector<bool>(C, false));
+        matrix = vector<vector<int>>(R, vector<int>(C, INT_MAX));
+        matrix[0][0] = grid[0][0];
+        return minCostUtil(0, 0, grid, visited);
+    }
+};
+
+// { Driver Code Starts.
+int main(){
+	int tc;
+	cin >> tc;
+	while(tc--){
+		int n;
+		cin >> n;
+		vector<vector<int>>grid(n, vector<int>(n, -1));
+		for(int i = 0; i < n; i++){
+			for(int j = 0; j < n; j++){
+				cin >> grid[i][j];
+			}
+		}
+		Solution obj;
+		int ans = obj.minimumCostPath(grid);
+		cout << ans << "\n";
+	}
+	return 0;
+}  // } Driver Code Ends
