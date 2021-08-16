@@ -1,0 +1,55 @@
+// { Driver Code Starts
+#include <bits/stdc++.h>
+using namespace std;
+
+
+ // } Driver Code Ends
+//User function Template for C++
+
+class Solution {
+  public:
+    vector<long long> distributeCandies(int N, int K) {
+        
+        long long val = 1; // Keeps track of current candy count
+        int idx = 0; // Keeps track of current person's index
+        vector<long long> res(K, 0); // Initialize all candies given to all people as 0
+        while( N > 0 ){
+            
+            // Update the candy count of idx'th person
+            res[idx++] += val;
+            
+            // Update the total candy count
+            N -= val;
+            
+            // Increase current candy count for next person
+            ++val;
+            
+            if( idx == K )
+                // If we reach last person and still have candies remaining, rotate to 1st person
+                idx = 0;
+                
+            if( N < val )
+                val = N;
+        }
+        return res;
+    }
+};
+
+// { Driver Code Starts.
+
+int main() {
+    int t;
+    cin >> t;
+    while (t--) {
+        int N,K;
+        cin>>N>>K;
+        
+        Solution ob;
+        vector<long long> res = ob.distributeCandies(N,K);
+        
+        for(int i=0; i<res.size(); i++)
+            cout<<res[i]<<" ";
+        cout<<endl;
+    }
+    return 0;
+}  // } Driver Code Ends
