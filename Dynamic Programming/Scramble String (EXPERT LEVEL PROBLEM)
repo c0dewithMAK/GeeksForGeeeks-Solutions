@@ -1,0 +1,77 @@
+class Solution {
+public:
+    unordered_map<string, bool> memo;
+    // Normal Recursion : Gives TLE
+    bool isScramble_recur(string s1, string s2) {
+        
+        if( s1.compare(s2) == 0 )
+            return true;
+        
+        if( s1.length() <= 1 )
+            return false;
+        
+        int n = s1.size();
+        for(int i = 1; i <= n - 1; ++i){*/
+            // Loop for partition at several i values each time
+            if( /*Case 1*/ ( isScramble_recur(s1.substr(0, i), s2.substr(n - i, i)) &&
+                         isScramble_recur(s1.substr(i, n - i), s2.substr(0, n - i)) ) ||
+                /*Case 2*/ ( isScramble_recur(s1.substr(0, i), s2.substr(0, i)) &&
+                             isScramble_recur(s1.substr(i, n - i), s2.substr(i, n - i)) )
+              )
+                return true;
+        }
+        return false;
+    }
+    
+    // Memoized Version
+    bool isScramble_memo(string s1, string s2) {
+        
+        int n = s1.length();
+        string key = s1 + "$" + s2;
+        
+        if( memo.find(key) != memo.end() )
+            return memo[key];
+        
+        if( s1.compare(s2) == 0 )
+            return memo[key] = true;
+        
+        if( n <= 1 )
+            return memo[key] = false;
+        
+        string copy_s1 = s1;
+        string copy_s2 = s2;
+        sort(copy_s1.begin(), copy_s1.end());
+        sort(copy_s2.begin(), copy_s2.end());
+        if( copy_s1 != copy_s2 )
+            return memo[key] = false;
+        
+        for(int i = 1; i <= n - 1; ++i){
+            // Loop for partition at several i values each time
+            string key1 = s1.substr(0, i) + "$" + s2.substr(n - i, i);
+            string key2 = s1.substr(i, n - i) + "$" + s2.substr(0, n - i);
+            string key3 = s1.substr(0, i) + "$" + s2.substr(0, i);
+            string key4 = s1.substr(i, n - i) + "$" + s2.substr(i, n - i);
+            
+            if( memo.find(key1) == memo.end() )
+                memo[key1] = isScramble_memo(s1.substr(0, i), s2.substr(n - i, i));
+            
+            if( memo.find(key2) == memo.end() )
+                memo[key2] = isScramble_memo(s1.substr(i, n - i), s2.substr(0, n - i));
+            
+            // Case 1 : Check here only for optimization purposes
+            if( memo[key1] && memo[key2] )
+                return memo[key] = true;
+            
+            if( memo.find(key3) == memo.end() )
+                memo[key3] = isScramble_memo(s1.substr(0, i), s2.substr(0, i));
+            
+            if( memo.find(key4) == memo.end() )
+                memo[key4] = isScramble_memo(s1.substr(i, n - i), s2.substr(i, n - i));
+
+            // Case 2
+            if( memo[key3] && memo[key4] )
+                return memo[key] = true;
+        }
+        return memo[key] = false;
+    }
+};
