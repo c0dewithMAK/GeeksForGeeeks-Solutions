@@ -1,0 +1,91 @@
+// { Driver Code Starts
+#include <bits/stdc++.h>
+
+using namespace std;
+
+
+ // } Driver Code Ends
+/*You are required to complete this method*/
+
+class Solution{
+  public:
+    vector<string> res;
+    
+    bool checkOctetValidity(string& s){
+        
+        stringstream ss(s);
+        string octet;
+        while(getline(ss, octet, '.')){
+            if( octet.length() > 3 )
+                return false;
+            if( octet[0] == '0' && octet.length() > 1 )
+                return false;
+            if( stoi(octet) > 255 )
+                return false;
+        }
+        return true;
+    }
+    
+    void solve(int idx, int countDots, string str, string& s){
+        
+        if( idx == s.size() && countDots < 3 )
+            return;
+        else if( countDots > 3 )
+            return;
+        else if( idx == s.size() && countDots == 3 ){
+            if( checkOctetValidity(str) )
+                res.push_back(str);
+            return;
+        }
+        
+        string temp(1, s[idx]);
+        solve(idx + 1, countDots + 1, str + "." + temp, s);
+        solve(idx + 1, countDots, str + temp, s);
+        
+    }
+    
+    vector<string> genIp(string &s) {
+        
+        
+        if( s.size() < 4 ){
+            return res;
+        }
+        if( s.size() == 4 ){
+            string temp;
+            temp.push_back(s[0]);
+            temp.push_back('.');
+            temp.push_back(s[1]);
+            temp.push_back('.');
+            temp.push_back(s[2]);
+            temp.push_back('.');
+            temp.push_back(s[3]);
+            res.push_back(temp);
+            return res;
+        }
+        
+        string temp;
+        temp.push_back(s[0]);
+        solve(1, 0, temp, s);
+        return res;
+    }
+
+};
+
+// { Driver Code Starts.
+
+int main() {
+    int T;
+    cin >> T;
+    while (T--) {
+        string s;
+        cin >> s;
+
+        /*generating naively*/
+        Solution obj;
+        vector<string> str = obj.genIp(s);
+        sort(str.begin(), str.end());
+        for (auto &u : str) {
+            cout << u << "\n";
+        }
+    }
+}  // } Driver Code Ends
