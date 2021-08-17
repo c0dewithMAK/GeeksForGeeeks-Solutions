@@ -1,0 +1,76 @@
+// { Driver Code Starts
+// Initial template for C++
+
+#include <bits/stdc++.h>
+using namespace std;
+
+
+ // } Driver Code Ends
+//User function template for C++
+
+class Solution {
+  public:
+    int romanToDecimal(string &str) {
+        int res = 0;
+        int idx = 0;
+        while( idx < str.size() ){
+            // Substractive Cases like CM, XV, IX etc
+            if( idx < str.size() - 1 && str[idx] == 'C' && str[idx + 1] == 'M' ){
+                res += 1000 - 100;
+                idx += 2;
+            }
+            else if( idx < str.size() - 1 && str[idx] == 'C' && str[idx + 1] == 'D' ){
+                res += 500 - 100;
+                idx += 2;
+            }
+            else if( idx < str.size() - 1 && str[idx] == 'X' && str[idx + 1] == 'C' ){
+                res += 100 - 10;
+                idx += 2;
+            }
+            else if( idx < str.size() - 1 && str[idx] == 'X' && str[idx + 1] == 'L' ){
+                res += 50 - 10;
+                idx += 2;
+            }
+            else if( idx < str.size() - 1 && str[idx] == 'I' && str[idx + 1] == 'X' ){
+                res += 10 - 1;
+                idx += 2;
+            }
+            else if( idx < str.size() - 1 && str[idx] == 'I' && str[idx + 1] == 'V' ){
+                res += 5 - 1;
+                idx += 2;
+            }
+            else{
+                // Additive Cases like XX
+                if( str[idx] == 'M' )
+                    res += 1000;
+                else if( str[idx] == 'D' )
+                    res += 500;
+                else if( str[idx] == 'C' )
+                    res += 100;
+                else if( str[idx] == 'L' )
+                    res += 50;
+                else if( str[idx] == 'X' )
+                    res += 10;
+                else if( str[idx] == 'V' )
+                    res += 5;
+                else if( str[idx] == 'I' )
+                    res += 1;
+                ++idx;
+            }
+        }
+        return res;
+    }
+};
+
+// { Driver Code Starts.
+
+int main() {
+    int t;
+    cin >> t;
+    while (t--) {
+        string s;
+        cin >> s;
+        Solution ob;
+        cout << ob.romanToDecimal(s) << endl;
+    }
+}  // } Driver Code Ends
