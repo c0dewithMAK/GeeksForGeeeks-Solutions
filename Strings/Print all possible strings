@@ -1,0 +1,53 @@
+// { Driver Code Starts
+#include<bits/stdc++.h>
+using namespace std;
+
+vector<string>  spaceString(char str[]);
+
+int main()
+{
+    int T;
+    cin>>T;
+    while(T--)
+    {
+        char str[10000];
+        cin>>str;
+        vector<string> vec = spaceString(str);
+        for(string s: vec){
+            cout<<s<<"$";
+        }
+        cout<<endl;
+    }
+
+}
+// } Driver Code Ends
+
+
+/*You have to complete this function*/
+vector<string> res;
+
+void solve( int idx, string str, string& s ){
+    
+    // Base condition
+    if( idx == s.size() ){
+        res.push_back(str);
+        return;
+    }
+    
+    string tempStr(1, s[idx]);
+    
+    // Choice 1 : Add whitespace
+    solve(idx + 1, str + " " + tempStr, s);
+    // Choice 2 : Don't add whitespace
+    solve(idx + 1, str + tempStr, s);
+}
+
+vector<string>  spaceString(char str[])
+{
+    string s = str;
+    res.clear();
+    string temp(1, s[0]);
+    solve( 1, temp, s );
+    reverse(res.begin(), res.end());
+    return res;
+}
