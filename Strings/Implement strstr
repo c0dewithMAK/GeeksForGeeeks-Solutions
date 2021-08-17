@@ -1,0 +1,46 @@
+// { Driver Code Starts
+#include<bits/stdc++.h>
+using namespace std;
+
+int strstr(string ,string);
+
+int main()
+{
+    int t;
+    cin>>t;
+    while(t--)
+    {
+        string a;
+        string b;
+        
+        cin>>a;
+        cin>>b;
+        
+        cout<<strstr(a,b)<<endl;
+    }
+}
+// } Driver Code Ends
+
+
+//Function to locate the occurrence of the string x in the string s.
+int strstr(string s, string x)
+{
+     int firstIndex = -1;
+     for(int i = 0; i < s.size(); ++i){
+        if( s[i] == x[0] ){
+            int temp_i = i + 1;
+            firstIndex = i;
+            int j = 1;
+            for(j = 1; j < x.size() && temp_i < s.size(); ++j){
+                if( s[temp_i++] != x[j] ){
+                    break;
+                }
+            }
+            if( j == x.size() )
+                return firstIndex;
+            else
+                firstIndex = -1;
+        }
+    }
+    return firstIndex;
+}
