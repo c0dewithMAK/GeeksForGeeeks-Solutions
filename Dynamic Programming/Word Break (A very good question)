@@ -1,0 +1,120 @@
+// { Driver Code Starts
+//Initial template for C++
+
+#include <bits/stdc++.h>
+using namespace std;
+
+
+ // } Driver Code Ends
+//User function template for C++
+
+// A : given string to search
+// B : vector of available strings
+
+class Solution
+{
+public:
+    int memo[1001];
+    bool isSegmentPresent(string prefix, vector<string>& dict){
+        
+        if( prefix.size() == 0 )    return false;
+        for(string& s : dict){
+            if( prefix.compare(s) == 0 )
+                return true;
+        }
+        return false;
+    }
+    
+    bool solve_recur(string s, vector<string>& dict){
+        
+        if( s.size() == 0 )
+            return true;
+
+        for(int i = 1; i <= s.size(); ++i){
+            string prefix = s.substr(0, i);
+            string suffix = s.substr(i, s.size() - i);
+            
+            if( isSegmentPresent(prefix, dict) && solve_recur(suffix, dict) )
+                return true;
+        }
+        return false;
+    }
+    
+    int solve_Tabulation(string str, vector<string>& dict){
+        
+        int size = str.size();
+        if (size == 0)   return true;
+ 
+        // Create the DP table to store results of subroblems. The value wb[i]
+        // will be true if str[0..i-1] can be segmented into dictionary words,
+        // otherwise false.
+        bool wb[size+1];
+        memset(wb, 0, sizeof(wb)); // Initialize all values as false.
+ 
+        for (int i = 1; i <= size; i++)
+        {
+            // if wb[i] is false, then check if current prefix can make it true.
+            // Current prefix is "str.substr(0, i)"
+            if (wb[i] == false && isSegmentPresent( str.substr(0, i), dict ))
+                wb[i] = true;
+ 
+            // wb[i] is true, then check for all substrings starting from
+            // (i+1)th character and store their results.
+            if (wb[i] == true)
+            {
+                // If we reached the last prefix
+                if (i == size)
+                    return true;
+ 
+                for (int j = i+1; j <= size; j++)
+                {
+                    // Update wb[j] if it is false and can be updated
+                    // Note the parameter passed to dictionaryContains() is
+                    // substring starting from index 'i' and length 'j-i'
+                    if (wb[j] == false && isSegmentPresent( str.substr(i, j-i), dict ))
+                        wb[j] = true;
+ 
+                    // If we reached the last character
+                    if (j == size && wb[j] == true)
+                        return true;
+                }
+            }
+        }
+ 
+        // If we have tried all prefixes and none of them worked
+        return false;
+    }
+
+    int wordBreak(string A, vector<string> &B) {
+        
+        // Method 1 : Using Recursion
+        // return ( solve_recur(A, B) ) ? 1 : 0;
+        
+        // Method 2 : Memoization
+        memset(memo, -1, sizeof(memo));
+        return solve_Tabulation(A, B) ? 1 : 0;
+        
+    }
+};
+
+// { Driver Code Starts.
+
+int main(){
+    int t;
+    cin>>t;
+    while(t--){
+        int n;
+        cin>>n;
+        vector<string> dict;
+        for(int i=0;i<n;i++){
+            string S;
+            cin>>S;
+            dict.push_back(S);
+        }
+        string line;
+        cin>>line;
+        Solution ob;
+        cout<<ob.wordBreak(line, dict)<<"\n";
+    }
+}
+  // } Driver Code Ends
