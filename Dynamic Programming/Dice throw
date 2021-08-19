@@ -1,0 +1,63 @@
+// { Driver Code Starts
+#include <bits/stdc++.h>
+using namespace std;
+
+ // } Driver Code Ends
+class Solution {
+  public:
+    long long memo[51][51];
+    long long solve_recur(int M, int N, int X){
+        
+        if( X < 1 ) return 0;
+        if( N == 1 && X > M )   return 0;
+        if( N == 1 && X <= M )  return 1;
+        
+        long long numWays = 0;
+        for(int i = 1; i <= M; ++i){
+            numWays += solve_recur(M, N - 1, X - i);
+        }
+        return numWays;
+    }
+    
+    long long solve_memo(int M, int N, int X){
+        
+        // Base Conditions
+        if( X < 1 ) return ( memo[N][X] = 0 );
+        if( N == 1 && X > M )   return ( memo[N][X] = 0 );
+        if( N == 1 && X <= M )  return ( memo[N][X] = 1 );
+        
+        if( memo[N][X] != -1 )
+            return memo[N][X];
+        
+        long long numWays = 0;
+        for(int i = 1; i <= M; ++i){
+            numWays +=  solve_memo(M, N - 1, X - i);
+        }
+        return ( memo[N][X] = numWays );
+    }
+    
+    long long noOfWays(int M , int N , int X) {
+        
+        // Method 1 : Using recursion
+        // return solve_recur(M, N, X);
+        
+        // Method 2 : Memoization
+        memset(memo, -1, sizeof(memo));
+        return solve_memo(M, N, X);
+    }
+};
+
+// { Driver Code Starts.
+int main() {
+    int t;
+    cin >> t;
+    while (t--) {
+        int M,N,X;
+        
+        cin>>M>>N>>X;
+
+        Solution ob;
+        cout << ob.noOfWays(M,N,X) << endl;
+    }
+    return 0;
+}  // } Driver Code Ends
