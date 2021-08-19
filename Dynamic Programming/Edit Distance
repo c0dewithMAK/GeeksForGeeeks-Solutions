@@ -1,0 +1,139 @@
+// { Driver Code Starts
+#include <bits/stdc++.h>
+using namespace std;
+
+ // } Driver Code Ends
+class Solution {
+  public:
+    int memo[101][101];
+    int eDistRecur(int n, int m, string& s, string& t){
+        
+        // Base Conditions :
+        // If second string is empty, only option is to delete all characters of string 1
+        if( n > 0 && m == 0 )    return n; // Hence n delete operations
+        // If first string is empty, only option is to insert all characters of string 2 to 1
+        if( n == 0 && m > 0 )    return m; // Hence m insert operations
+        // If both strings are empty, no operations needed
+        if( n == 0 && m == 0 )    return 0;
+        
+        if( s[n-1] == t[m-1] )
+            return eDistRecur(n - 1, m - 1, s, t);
+        else{
+            int insert = eDistRecur(n, m - 1, s, t);
+            int del = eDistRecur(n - 1, m, s, t);
+            int replace = eDistRecur(n - 1, m - 1, s, t);
+            
+            // Now find minimum number of operations from below comparisons
+            if( insert < del && insert < replace )
+                return 1 + insert;
+            else if( del < insert && del < replace )
+                return 1 + del;
+            else
+                return 1 + replace;
+        }
+    }
+    
+    int eDistMemo(int n, int m, string& s, string& t){
+        
+        if( memo[n][m] != -1 )
+            return memo[n][m];
+        
+        // Base Conditions :
+        // If second string is empty, only option is to delete all characters of string 1
+        if( n > 0 && m == 0 )    return memo[n][m] = n; // Hence n delete operations
+        // If first string is empty, only option is to insert all characters of string 2 to 1
+        if( n == 0 && m > 0 )    return memo[n][m] = m; // Hence m insert operations
+        // If both strings are empty, no operations needed
+        if( n == 0 && m == 0 )    return memo[n][m] = 0;
+        
+        if( s[n-1] == t[m-1] ){
+            if( memo[n-1][m-1] != -1 )
+                return ( memo[n][m] = memo[n-1][m-1] );
+            return memo[n][m] = eDistMemo(n - 1, m - 1, s, t);
+        }
+        else{
+            if( memo[n][m-1] == -1 )
+                memo[n][m-1] = eDistMemo(n, m - 1, s, t);
+            int insert = memo[n][m-1];
+            
+            if( memo[n-1][m] == -1 )
+                memo[n-1][m] = eDistMemo(n - 1, m, s, t);
+            int del = memo[n-1][m];
+            
+            if( memo[n-1][m-1] == -1 )
+                memo[n-1][m-1] = eDistMemo(n-1, m - 1, s, t);
+            int replace = memo[n-1][m-1];
+            
+            // Now find minimum operations
+            if( insert < del && insert < replace )
+                return ( memo[n][m] = 1 + insert );
+            else if( del < insert && del < replace )
+                return ( memo[n][m] = 1 + del );
+            else
+                return ( memo[n][m] = 1 + replace );
+        }
+    }
+    
+    int eDistTabulation(int n, int m, string& s, string& t){
+        
+        int dp[n+1][m+1];
+        memset(dp, -1, sizeof(dp));
+        
+        // Initialization for base conditions
+        dp[0][0] = 0;
+        
+        for(int i = 1; i <= m; ++i)
+            dp[0][i] = i;
+            
+        for(int i = 1; i <= n; ++i)
+            dp[i][0] = i;
+            
+        for(int i = 1; i <= n; ++i){
+            for(int j = 1; j <= m; ++j){
+                if( s[i-1] == t[j-1] )
+                    dp[i][j] = dp[i-1][j-1];
+                else{
+                    int insert = dp[i][j-1];
+                    int del = dp[i-1][j];
+                    int replace = dp[i-1][j-1];
+                    // Now find minimum number of operations from below comparisons
+                    if( insert < del && insert < replace )
+                        dp[i][j] = 1 + insert;
+                    else if( del < insert && del < replace )
+                        dp[i][j] = 1 + del;
+                    else
+                        dp[i][j] = 1 + replace;
+                }
+            }
+        }
+        return dp[n][m];
+    }
+    
+    int editDistance(string s, string t) {
+        
+        // Method 1 : Using recursion (TLE)
+        //return eDistRecur(s.size(), t.size(), s, t);
+        
+        // Method 2 : Top-Down Memoization
+        // memset(memo, -1, sizeof(memo));
+        // return eDistMemo(s.size(), t.size(), s, t);
+        
+        // Method 3 : BottomUp Tabulation DP
+        return eDistTabulation(s.size(), t.size(), s, t);
+    }
+};
+
+// { Driver Code Starts.
+int main() {
+    int T;
+    cin >> T;
+    while (T--) {
+        string s, t;
+        cin >> s >> t;
+        Solution ob;
+        int ans = ob.editDistance(s, t);
+        cout << ans << "\n";
+    }
+    return 0;
+}
+  // } Driver Code Ends
