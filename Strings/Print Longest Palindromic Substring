@@ -1,0 +1,81 @@
+// { Driver Code Starts
+//Initial template for C++
+
+#include<bits/stdc++.h> 
+using namespace std; 
+
+ // } Driver Code Ends
+//User function template for C++
+
+class Solution{   
+public:
+
+    int expandFromMiddle(int left, int right, string& S){
+        // This function basically expands the window of palindromic substring from middle
+        
+        if( S.size() == 0 || left > right )
+            return 0;
+            
+        while(left >= 0 && right < S.length() && S[left] == S[right] ){
+            --left;
+            ++right;
+        }
+        
+        // After coming out left has been decreased once more and right has been increased 
+        // once more even though S[left] != S[right], so reset the pointers to final
+        // correct values
+        ++left;
+        --right;
+        
+        // Now return the length of this palindromic substring
+        return right - left + 1;
+        
+    }
+    
+    string longestPalindrome(string S){
+        
+        int len = S.length();
+        if( len == 0 )  return "";
+        
+        // Final index indicating start of the longest palindromic substring
+        int start = 0;
+        // Len of the longest palindromic substring
+        int maxLen = 0;
+        for(int i = 0; i < len; ++i){
+            
+            // Find odd length palindromic substring of some length
+            // Expansion happens from mid element only (odd length)
+            int oddLen = expandFromMiddle(i, i, S);
+            
+            // Find even length palindromic substring of some length
+            // Expansion happens from mid and mid + 1 elements only (even length has 2 mids)
+            int evenLen = expandFromMiddle(i, i + 1, S);
+            
+            int maxLenTillNow = max( oddLen, evenLen );
+
+            // Update the final window pointers
+            if( maxLenTillNow > maxLen ){
+                start = i - (maxLenTillNow - 1)/2;
+                maxLen = maxLenTillNow;
+            }
+        }
+        return S.substr(start, maxLen);
+    }
+};
+
+// { Driver Code Starts.
+
+
+
+int main(){
+    int t;
+    cin>>t;
+    while(t--){
+        string S;
+        cin>>S;
+        Solution ob;
+        cout<<ob.longestPalindrome(S)<<endl;
+    }
+    return 0;
+}
+  // } Driver Code Ends
