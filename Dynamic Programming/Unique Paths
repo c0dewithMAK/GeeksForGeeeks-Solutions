@@ -1,0 +1,75 @@
+class Solution {
+public:
+    int pathCount = 0;
+    int R;
+    int C;
+    bool visited[101][101];
+    int memo[101][101];
+    bool isValid(int r, int c){
+        if( r < 0 || r == R || c < 0 || c == C )
+            return false;
+        if( visited[r][c] )
+            return false;
+        return true;
+    }
+    
+    void countPathsUtil(int r, int c){
+    
+        visited[r][c] = true;
+        if( r == R - 1 && c == C - 1 ){
+            ++pathCount;
+            visited[r][c] = false;
+            return;
+        }
+        
+        if( isValid(r, c + 1) )
+            countPathsUtil(r, c + 1);
+        
+        if( isValid(r + 1, c) )
+            countPathsUtil(r + 1, c);
+        visited[r][c] = false;
+    }
+    
+    int countPathsUtilMemo(int r, int c){
+        
+        if( memo[r][c] != -1 )
+            return memo[r][c];
+        
+        visited[r][c] = true;
+        if( r == R - 1 && c == C - 1 ){
+            visited[r][c] = false;
+            return memo[r][c] = 1;
+        }
+        
+        if( isValid(r, c + 1) ){
+            if( memo[r][c + 1] == -1 )
+                memo[r][c + 1] = countPathsUtilMemo(r, c + 1);
+        }
+        else
+            memo[r][c + 1] = 0;
+        
+        
+        if( isValid(r + 1, c) ){
+            if( memo[r + 1][c] == -1 )
+                memo[r + 1][c] = countPathsUtilMemo(r + 1, c);
+        }
+        else
+            memo[r + 1][c] = 0;
+        
+        visited[r][c] = false;
+        return ( memo[r][c] = memo[r][c + 1] + memo[r + 1][c] );
+    }
+    
+    int uniquePaths(int m, int n) {
+        R = m;
+        C = n;
+        memset(visited, 0, sizeof(visited));
+        // Method 1 : Using recursion (gives TLE)
+        // countPathsUtil(0, 0);
+        // return pathCount;
+        
+        // Method 2 : Memoization
+        memset(memo, -1, sizeof(memo));
+        return countPathsUtilMemo(0, 0);
+    }
+};
