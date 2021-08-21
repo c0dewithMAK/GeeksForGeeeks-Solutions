@@ -1,0 +1,78 @@
+class Solution {
+public:
+    int R;
+    int C;
+    int source_r;
+    int source_c;
+    int dest_r;
+    int dest_c;
+    int longestPathLength = 0;
+    int totalPaths = 0;
+    
+    void countPaths(int r, int c, vector<vector<int>>& grid, int currentPathLength){
+
+        if( grid[r][c] == 2 ){
+            // We reached destination cell
+            if( currentPathLength == longestPathLength )
+                ++totalPaths;
+            return;
+        }
+        grid[r][c] = -2; // Mark this cell as visited using -2 value        
+
+        // Move Right
+        if( c + 1 < C && grid[r][c + 1] >= 0 ){
+            countPaths(r, c + 1, grid, currentPathLength + 1);
+        }
+        
+        // Move Down
+        if( r + 1 < R && grid[r + 1][c] >= 0 ){
+            countPaths(r + 1, c, grid, currentPathLength + 1);
+        }
+        
+        // Move Left
+        if( c - 1 >= 0 && grid[r][c - 1] >= 0 ){
+            countPaths(r, c - 1, grid, currentPathLength + 1);
+        }
+        
+        // Move Up
+        if( r - 1 >= 0 && grid[r - 1][c] >= 0 ){
+            countPaths(r - 1, c, grid, currentPathLength + 1);
+        }
+        
+        grid[r][c] = 0; // Mark this cell again as unvisited
+        return;        
+    }
+    
+    int uniquePathsIII(vector<vector<int>>& grid) {
+        
+        R = grid.size();
+        C = grid[0].size();
+        if( R == 1 && C == 1 )
+            return 0;
+        
+        int obstacleCount = 0;
+        // Find the source, destination cells and number of obstacles first
+        for(int i = 0; i < R; ++i){
+            for(int j = 0; j < C; ++j){
+                if( grid[i][j] == 1 ){
+                    source_r = i;
+                    source_c = j;
+                }
+                else if( grid[i][j] == 2 ){
+                    dest_r = i;
+                    dest_c = j;
+                }
+                else if( grid[i][j] == -1 )
+                    ++obstacleCount;
+            }
+        }
+
+        if( source_r == dest_r && source_c == dest_c )
+            return 0;
+        
+        // This is the total walkable path length
+        longestPathLength = (R * C) - obstacleCount;
+        countPaths(source_r, source_c, grid, 1);
+        return totalPaths;
+    }
+};
