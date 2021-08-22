@@ -1,0 +1,97 @@
+// { Driver Code Starts
+//Initial template for C++
+
+#include <bits/stdc++.h>
+using namespace std;
+
+
+ // } Driver Code Ends
+//User function template for C++
+
+class Solution {
+  public:
+    vector<vector<int>> res;
+    static bool myComparator(vector<int>& x, vector<int>& y){
+        int i = 0;
+        int j = 0;
+        while( x[i] == y[j] && i < x.size() && j < y.size() ){
+            ++i;
+            ++j;
+        }
+        if( i < x.size() && j < y.size() )
+            return x[i] < y[i];
+    }
+    void combSumUtil(vector<int>& A, int& sum, int tempSum, int idx, vector<int>& combination){
+        
+        if( tempSum > sum )
+            return;
+            
+        if( tempSum == sum ){
+            vector<int> temp = combination;
+            sort(temp.begin(), temp.end());
+            res.push_back(temp);
+            return;
+        }
+        
+        if( idx == A.size() )
+            return;
+
+        // First : Include A[idx] in the combination
+        combination.push_back(A[idx]);
+        combSumUtil(A, sum, tempSum + A[idx], idx, combination);
+        combination.pop_back();
+
+        // Second : Exclude A[idx] from the combination and move on to next element
+        combSumUtil(A, sum, tempSum, idx + 1, combination);
+    }
+    
+    //Function to return a list of indexes denoting the required 
+    //combinations whose sum is equal to given number.
+    vector<vector<int> > combinationSum(vector<int> &A, int B) {
+        vector<int> temp;
+        
+        // Sort the array A first
+        sort(A.begin(), A.end());
+        // Remove consecutive duplicates from array now
+        vector<int>::iterator itr = unique(A.begin(), A.begin() + A.size());
+        // Resize to remove undefined elements
+        A.resize(distance(A.begin(), itr));
+        
+        combSumUtil(A, B, 0, 0, temp);
+        sort(res.begin(), res.end(), myComparator);
+        return res;
+    }
+};
+
+// { Driver Code Starts.
+int main(){
+    int t;
+    cin>>t;
+    while(t--){
+        int n;
+        cin>>n;
+        vector<int> A;
+        for(int i=0;i<n;i++){
+            int x;
+            cin>>x;
+            A.push_back(x);
+        }   
+        int sum;
+        cin>>sum;
+        Solution ob;
+        vector<vector<int>> result = ob.combinationSum(A, sum);
+   		if(result.size()==0){
+   			cout<<"Empty";
+   		}
+        for(int i=0;i<result.size();i++){
+            cout<<'(';
+            for(int j=0;j<result[i].size();j++){
+                cout<<result[i][j];
+                if(j<result[i].size()-1)
+                    cout<<" ";
+            }
+            cout<<")";
+        }
+        cout<<"\n";
+    }
+}	  // } Driver Code Ends
