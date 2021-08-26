@@ -1,0 +1,129 @@
+// { Driver Code Starts
+// Initial Template for C++
+
+#include <bits/stdc++.h>
+using namespace std;
+
+ // } Driver Code Ends
+// User function Template for C++
+
+class Solution{
+public:
+    int R;
+    int C;
+    int largestSum;
+    int memo[502][502];
+    vector<vector<bool>> visited;
+    
+    void maxPathRecur(int r, int c, int pathSum, vector<vector<int>>& grid){
+        
+        if( r == R - 1 ){
+            if( pathSum + grid[r][c] > largestSum )
+                largestSum = pathSum + grid[r][c];
+            return;
+        }
+        
+        visited[r][c] = true;
+        
+        if( r + 1 < R && visited[r + 1][c] == false )
+            maxPathRecur(r + 1, c, pathSum + grid[r][c], grid);
+            
+        if( r + 1 < R && c - 1 >= 0 && visited[r + 1][c - 1] == false )
+            maxPathRecur(r + 1, c - 1, pathSum + grid[r][c], grid);
+            
+        if( r + 1 < R && c + 1 < C && visited[r + 1][c + 1] == false )
+            maxPathRecur(r + 1, c + 1, pathSum + grid[r][c], grid);
+    
+        visited[r][c] = false;        
+    }
+    
+    int maxPathMemo(int r, int c, vector<vector<int>>& grid){
+        
+        if( memo[r][c] != -1 )
+            return memo[r][c];
+            
+        if( r == R - 1  ){
+            return memo[r][c] = grid[r][c];
+        }
+        
+        visited[r][c] = true;
+        
+        if( r + 1 < R && visited[r + 1][c] == false ){
+            if( memo[r + 1][c] == -1 )
+                memo[r + 1][c] = maxPathMemo(r + 1, c, grid);
+        }
+            
+        if( r + 1 < R && c - 1 >= 0 && visited[r + 1][c - 1] == false ){
+            if( memo[r + 1][c - 1] == -1 )
+                memo[r + 1][c - 1] = maxPathMemo(r + 1, c - 1, grid);
+        }
+            
+        if( r + 1 < R && c + 1 < C && visited[r + 1][c + 1] == false ){
+            if( memo[r + 1][c + 1] == -1 )
+                memo[r + 1][c + 1] = maxPathMemo(r + 1, c + 1, grid);
+        }
+    
+        visited[r][c] = false;
+        return memo[r][c] = grid[r][c] + max( memo[r + 1][c], 
+                                        max( memo[r + 1][c - 1], memo[r + 1][c + 1] ) );
+    }
+    
+    int maxPathTabulation(vector<vector<int>>& grid){
+        
+        int max_val = 0;
+        int dp[R + 1][C + 1];
+        memset(dp, -1, sizeof(dp));
+        
+        for(int r = 0; r <= R; ++r){
+            for(int c = 0; c <= C; ++c){
+                if( r == 0 || c == 0 )
+                    dp[r][c] = 0;
+                else
+                    dp[r][c] = grid[r - 1][c - 1] + max( dp[r -1][c - 1], 
+                                            max( dp[r - 1][c], dp[r - 1][c + 1] ) );
+                max_val = max( max_val, dp[r][c] );
+            }
+        }
+        return max_val;
+    }
+    
+    int maximumPath(int N, vector<vector<int>> Matrix)
+    {
+        R = Matrix.size();
+        C = Matrix[0].size();
+        visited = vector<vector<bool>>(R, vector<bool>(C, false));
+        largestSum = INT_MIN;
+        memset(memo, -1, sizeof(memo));
+        //for(int i = 0; i < C; ++i){
+            
+            // Method 1 : Using Recursion (gives TLE)
+            // maxPathRecur(0, i, 0, Matrix);
+            
+            // Method 2 : Using Memoization
+            // largestSum = max(largestSum, maxPathMemo(0, i, Matrix) );
+            
+            
+        //}
+        // Method 3 : Tabulation Bottom Up
+        largestSum = maxPathTabulation(Matrix);
+        return largestSum;
+    }
+};
+
+// { Driver Code Starts.
+
+int main(){
+    int t;
+    cin>>t;
+    while(t--){
+        int N;
+        cin>>N;
+        vector<vector<int>> Matrix(N, vector<int>(N, 0));
+        for(int i = 0;i < N*N;i++)
+            cin>>Matrix[(i/N)][i%N];
+        
+        Solution ob;
+        cout<<ob.maximumPath(N, Matrix)<<"\n";
+    }
+    return 0;
+}  // } Driver Code Ends
