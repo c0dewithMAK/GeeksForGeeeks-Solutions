@@ -1,0 +1,26 @@
+int Solution::solve(string A) {
+    string copy_A = A;
+    reverse(copy_A.begin(), copy_A.end());
+    string s(A + "$" + copy_A);
+    int n = s.size();
+    vector<int> lps(n, 0);
+    // Find the LPS of this string s now
+    int j = 0, i = 1;
+    while( i < n ){
+        if( s[i] == s[j] ){
+            lps[i] = j + 1;
+            ++j;
+            ++i;
+        }
+        else{
+            if( j > 0 )
+                j = lps[j-1];
+            else{
+                lps[i] = 0;
+                ++i;
+            }
+        }
+    }
+
+    return A.size() - lps[n - 1];
+}
