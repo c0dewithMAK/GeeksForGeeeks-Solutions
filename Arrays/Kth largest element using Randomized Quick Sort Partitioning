@@ -1,0 +1,56 @@
+class Solution {
+public:
+    int partition(int left, int right, int pivotIndex, vector<int>& nums){
+    
+        int pivotValue = nums[pivotIndex];
+        int lesserItemsTailIndex = left;
+
+        /*
+        * Move the item at the 'pivotIndex' OUT OF THE WAY. We are about to bulldoze
+        * through the partitioning space and we don't want it in the way
+        */
+        swap(nums[pivotIndex],nums[right]);
+        
+        for (int i = left; i < right; i++) {
+            if (nums[i] < pivotValue) {
+                swap( nums[i], nums[lesserItemsTailIndex]);
+                lesserItemsTailIndex++;
+            }
+        }
+
+        /*
+        * Ok...partitioning is done. Swap the pivot item BACK into the space we just
+        * partitioned at the 'lesserItemsTailIndex'...that's where the pivot item
+        * belongs
+        * 
+        * In the middle of the "sandwich".
+        */
+
+        swap(nums[right], nums[lesserItemsTailIndex]);
+
+        return lesserItemsTailIndex;
+    }
+    
+    int findKthLargest(vector<int>& nums, int k) {
+        // Let's use the randomized quicksort partitioning technique
+        // Average case - O(N)
+        // Worst Case (Likelihood is very low) - O(N^2)
+        int n = nums.size();
+        int left = 0;
+        int right = nums.size() - 1;
+        while( left <= right ){
+            int randomPivotIndex = rand()%(right - left + 1) + left;
+            int choosenPivotIndex = partition(left, right, randomPivotIndex, nums);
+            
+            if( choosenPivotIndex == (n - k) )
+                return nums[choosenPivotIndex];
+            else if( choosenPivotIndex < (n - k) )
+                // kth largest element lies to the right of current pivot
+                left = choosenPivotIndex + 1;
+            else
+                // kth largest element lies to the right of current pivot
+                right = choosenPivotIndex - 1;                
+        }
+        return -1;
+    }
+};
