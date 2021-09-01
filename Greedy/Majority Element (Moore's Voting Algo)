@@ -1,0 +1,76 @@
+// { Driver Code Starts
+//Initial template for C++
+
+#include<bits/stdc++.h>
+using namespace std;
+
+
+ // } Driver Code Ends
+//User function template for C++
+
+class Solution{
+  public:
+    // Utility function to find viable candidate for majority element
+    int findCandidate(int a[], int size){
+        
+        int major_elem = 0; // Assume ME is first index element
+        int count = 1;
+        for(int i = 1; i < size; ++i){
+            
+            if( a[i] == a[major_elem] )
+                ++count;
+            else
+                --count;
+            
+            if( count == 0 ){
+                major_elem = i;
+                count = 1;
+            }
+        }
+        return a[major_elem];
+    }
+    
+     // Function to find majority element in the array
+    // a: input array
+    // size: size of input array
+    int majorityElement(int a[], int size)
+    {
+        // Time Complexity - O(2N) and Space - O(1)
+        // First find the candidate element using Moore's Voting Algorithm
+        int majorElem = findCandidate(a, size);
+        
+        // Now let's see if the frequency of this element is > size/2 or not
+        int freq = 0;
+        for(int i = 0; i < size; ++i){
+            if( a[i] == majorElem )
+                ++freq;
+        }
+        
+        if( freq > (size / 2) )
+            return majorElem;
+        return -1;
+    }
+};
+
+// { Driver Code Starts.
+
+int main(){
+
+    int t;
+    cin >> t;
+
+    while(t--){
+        int n;
+        cin >> n;
+        int arr[n];
+        
+        for(int i = 0;i<n;i++){
+            cin >> arr[i];
+        }
+        Solution obj;
+        cout << obj.majorityElement(arr, n) << endl;
+    }
+
+    return 0;
+}
+  // } Driver Code Ends
