@@ -1,0 +1,48 @@
+// { Driver Code Starts
+#include<bits/stdc++.h>
+using namespace std;
+
+int max_sum(int A[],int N);
+
+int main()
+{
+    int T;
+    cin>>T;
+    while(T--)
+    {
+        int N;
+        cin>>N;
+        int A[N];
+        for(int i=0;i<N;i++)
+        {
+            cin>>A[i];
+        }
+
+        cout<<max_sum(A,N)<<endl;
+        /*keeping track of the total sum of the array*/
+
+    }
+}
+// } Driver Code Ends
+
+
+/*You are required to complete this method*/
+int max_sum(int A[],int N)
+{
+    int maxSum = INT_MIN;
+    int totalSum = 0;
+    int totalProdSum = 0;
+    for(int i = 0; i < N; ++i){
+        totalSum += A[i];
+        totalProdSum += i * A[i];
+    }
+    
+    for(int i = 0; i < N; ++i){
+        
+        // Basically subtract one occurrence of totalSum except the element going to N - 1 pos
+        totalProdSum = totalProdSum - (totalSum - A[i]) + (N - 1) * A[i];
+        maxSum = max( maxSum, totalProdSum );
+    }
+    
+    return maxSum;
+}
