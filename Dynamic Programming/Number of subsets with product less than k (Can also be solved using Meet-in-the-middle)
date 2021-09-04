@@ -1,0 +1,54 @@
+// { Driver Code Starts
+#include <bits/stdc++.h>
+using namespace std;
+
+
+ // } Driver Code Ends
+//User function Template for C++
+
+class Solution {
+  public:
+    int count = 0;
+    void countSubsetUtil(int arr[], int N, int K, int prod, int idx){
+        
+        if( prod > K )
+            return;
+            
+        if( idx < 0 ){
+            if( prod <= K )
+                ++count;
+            return;
+        }
+        // Choice 1 - Include in subset
+        countSubsetUtil(arr, N, K, prod*arr[idx], idx - 1);
+        
+        // Choice 2 - Exclude from subset
+        countSubsetUtil(arr, N, K, prod, idx - 1);
+    }
+    
+    int numOfSubsets(int arr[], int N, int K) {
+        
+        countSubsetUtil(arr, N, K, 1, N-1);
+        return count - 1;
+    }
+};
+
+// { Driver Code Starts.
+
+int main() {
+    int t;
+    cin >> t;
+    while (t--) {
+        int N,K;
+        cin>>N;
+        
+        int arr[N];
+        for(int i=0; i<N; i++)
+            cin>>arr[i];
+        cin>>K;
+
+        Solution ob;
+        cout << ob.numOfSubsets(arr,N,K) << endl;
+    }
+    return 0;
+}  // } Driver Code Ends
