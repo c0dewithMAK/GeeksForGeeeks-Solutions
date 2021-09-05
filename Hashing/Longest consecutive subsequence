@@ -1,0 +1,55 @@
+// { Driver Code Starts
+#include <bits/stdc++.h>
+using namespace std;
+
+
+ // } Driver Code Ends
+class Solution{
+  public:
+    // arr[] : the input array
+    // N : size of the array arr[]
+    
+    //Function to return length of longest subsequence of consecutive integers.
+    int findLongestConseqSubseq(int arr[], int N)
+    {
+        int maxLongestSubseq = 0;
+        unordered_set<int> s;
+        // First store the elements in set
+        for(int i = 0; i < N; ++i)
+            s.insert(arr[i]);
+        
+        for(int i = 0; i < N; ++i){
+            int count = 0;
+            // Now search if longest subsequence is starting at arr[i] or not
+            if( !s.empty() && s.find(arr[i] - 1) == s.end() )
+            {
+                // Yes it is, find count of all consecutive elements starting from arr[i]
+                for(int j = arr[i]; s.find(j) != s.end(); ++j)
+                    ++count;
+                if( count > maxLongestSubseq )
+                    // Update the max length of the subsequence if needed
+                    maxLongestSubseq = count;
+            }
+        }
+        return maxLongestSubseq;
+    }
+};
+
+// { Driver Code Starts.
+ 
+// Driver program
+int main()
+{
+ int  t,n,i,a[100001];
+ cin>>t;
+ while(t--)
+ {
+  cin>>n;
+  for(i=0;i<n;i++)
+  cin>>a[i];
+  Solution obj;
+  cout<<obj.findLongestConseqSubseq(a, n)<<endl;
+ }
+      
+    return 0;
+}  // } Driver Code Ends
