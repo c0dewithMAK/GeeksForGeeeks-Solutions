@@ -5,11 +5,11 @@ using namespace std;
 
  // } Driver Code Ends
 //User function Template for C++
-
+#define ll long long;
 class Solution {
   public:
-    int count = 0;
-    void countSubsetUtil(int arr[], int N, int K, int prod, int idx){
+    int count;
+    void countSubsetUtil(int arr[], int K, int prod, int idx){
         
         if( prod > K )
             return;
@@ -20,16 +20,71 @@ class Solution {
             return;
         }
         // Choice 1 - Include in subset
-        countSubsetUtil(arr, N, K, prod*arr[idx], idx - 1);
+        countSubsetUtil(arr, K, prod*arr[idx], idx - 1);
         
         // Choice 2 - Exclude from subset
-        countSubsetUtil(arr, N, K, prod, idx - 1);
+        countSubsetUtil(arr, K, prod, idx - 1);
+    }
+
+    // Count subsets
+    int countSubsets(int arr[], int N, int K){
+        // Split the original array first
+        vector<int> first, second;
+        for(int i = 0; i < N; ++i){
+            if( arr[i] > K )
+                continue;
+            if( i < N/2 )
+                first.push_back(arr[i]);
+            else
+                second.push_back(arr[i]);
+        }
+        
+        // Array containing all possible products from first half of array
+        vector<int> prodFirst;
+        // Array containing all possible products from second half of array
+        vector<int> prodSecond;
+        
+        
+        for(int i = 0; i < (1 << first.size()); ++i){
+            int prod = 1;
+            for(int j = 0; j < first.size(); ++j){
+                if( i & (1 << j) )
+                    prod *= first[j];
+                if( prod > K )  break;
+            }
+            if( prod <= K )
+                prodFirst.push_back(prod);
+        }
+        
+        for(int i = 0; i < (1 << second.size()); ++i){
+            int prod = 1;
+            for(int j = 0; j < second.size(); ++j){
+                if( i & (1 << j) )
+                    prod *= second[j];
+                if( prod > K ) break;
+            }
+            if( prod <= K )
+                prodSecond.push_back(prod);
+        }
+        
+        // Sort the second list
+        sort(prodSecond.begin(), prodSecond.end());
+        count = 0;
+        for(int i = 0; i < prodFirst.size(); ++i){
+            count += upper_bound(prodSecond.begin(), prodSecond.end(), K/prodFirst[i]) 
+                                - prodSecond.begin();
+        }
+        return count - 1;
     }
     
     int numOfSubsets(int arr[], int N, int K) {
+        // Method 1 : Using simple recursive choice-based pattern
+        // countSubsetUtil(arr, K, 1, N-1);
+        // return count - 1;
         
-        countSubsetUtil(arr, N, K, 1, N-1);
-        return count - 1;
+        // Method 2 : Using Meet in the Middle (good for inputs > than 2^30)
+        return countSubsets(arr, N, K);
+        
     }
 };
 
