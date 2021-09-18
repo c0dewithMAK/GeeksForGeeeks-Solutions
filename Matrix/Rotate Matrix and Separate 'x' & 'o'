@@ -1,0 +1,84 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+    //Function to rotate matrix anticlockwise by 90 degrees.
+    void rotateby90(vector<vector<char>>& matrix, int n) 
+    { 
+        // Take transpose of the matrix
+        int i = 0;
+
+        for( ; i < n; ++i){
+            for(int j = i; j < n; ++j){
+                swap(matrix[i][j], matrix[j][i]);
+            }
+        }
+            
+            
+        int top = 0;
+        int down = n - 1;
+        int j = 0;
+        
+        while( j < n ){
+            
+            while( top < down ){
+                swap(matrix[top][j], matrix[down][j]);
+                ++top;
+                --down;
+            }
+            ++j;
+            top = 0;
+            down = n - 1;
+        }
+    }
+
+    // Function to separate 'x's and 'o's far apart in each column
+    void separateXO(auto& matrix, int n){
+        int c = 0;
+        while( c < n ){
+            int r1 = 0;
+            int r2 = n - 1;
+            while(r1 < r2){
+                while(matrix[r1][c] == 'o')
+                    ++r1;
+                while(matrix[r2][c] == 'x')
+                    --r2;
+                    
+                if( r1 < r2 ){
+                    matrix[r1][c] = 'o';
+                    matrix[r2][c] = 'x';
+                    ++r1;
+                    --r2;
+                }
+            }
+            ++c;
+        }
+    }
+    
+    // Function to print matrix
+    void printMatrix(auto& matrix){
+        for(int r = 0; r < matrix.size(); ++r){
+            for(int c  = 0; c < matrix.size(); ++c)
+                cout << matrix[r][c] << " ";
+            cout << "\n";
+        }
+    }
+
+int main()
+{
+    vector<vector<char>> matrix = {{'x', 'o', 'x', 'x'},
+                                   {'o', 'x', 'x', 'o'},
+                                   {'x', 'x', 'o', 'o'},
+                                   {'x', 'o', 'x', 'o'}
+    };
+    
+    cout << "Before Rotation : \n";
+    printMatrix(matrix);
+    rotateby90(matrix, matrix.size());
+    cout << "After Rotation : \n";
+    printMatrix(matrix);
+    separateXO(matrix, matrix.size());
+    cout << "After Separation : \n";
+    printMatrix(matrix);
+    
+    return 0;
+}
