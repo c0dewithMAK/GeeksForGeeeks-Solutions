@@ -151,7 +151,8 @@ Node *findInSuccNode(Node *node){
 //Function to delete a node from BST.
 Node *deleteNode(Node *root,  int X)
 {
-    if(!root)
+    // Method 1 :
+    /*if(!root)
         return root;
 
     if(X < root->data)
@@ -175,20 +176,57 @@ Node *deleteNode(Node *root,  int X)
         root->data = inSuccNode->data;
         root->right = deleteNode(root->right, inSuccNode->data);
     }
-    return root;
+    return root;*/
+    
+    // Method 2 : Much more efficient code
+    if( !root )
+        return root;
+        
+    if( root->data > X ){
+        root->left = deleteNode(root->left, X);
+        return root;
+    }
+    else if( root->data < X ){
+        root->right = deleteNode(root->right, X);
+        return root;
+    }
+    else{
+        // Now we have reached the node which we want to delete
+        // Case 1 : Node is a leaf with 0 children
+        if( !root->left && !root->right ){
+            delete root;
+            return NULL;
+        }
+        // Case 2 : Node has 1 child
+        if( root->left == NULL ){
+            Node *temp = root->right;
+            delete root;
+            return temp;
+        }
+        else if( root->right == NULL ){
+            Node *temp = root->left;
+            delete root;
+            return temp;
+        }
+        else{
+            // Case 3 : Leaf has both nodes, here we find Inorder Successor of 
+            //          the node to be deleted
+            Node *parent = root;
+            Node *succ = root->right;
+            while( succ->left ){
+                parent = succ;
+                succ = succ->left;
+            }
+            
+            if( parent == root )
+                parent->right = succ->right;
+            else
+                parent->left = succ->right;
+                
+            root->data = succ->data;
+            delete succ;
+            return root;
+        }
+        
+    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
