@@ -1,0 +1,70 @@
+// { Driver Code Starts
+#include<bits/stdc++.h>
+
+using namespace std;
+
+
+ // } Driver Code Ends
+class Solution{
+
+    // Function to find the trapped water between the blocks.
+    public:
+    long long trappingWater(int arr[], int n){
+        int maxLeft[n];
+        int maxRight[n];
+        long long totalWater = 0;
+        memset(maxLeft, 0, n);
+        memset(maxRight, 0, n);
+        maxLeft[0] = arr[0];
+        maxRight[n-1] = arr[n-1];
+        
+        // Find tallest building to the left of each ith building
+        for(int i = 1; i < n; ++i){
+            maxLeft[i] = max( maxLeft[i-1], arr[i-1] );
+        }
+        
+        // Find tallest building to the right of each ith building
+        for(int i = n - 2; i >= 0; --i){
+            maxRight[i] = max( maxRight[i+1], arr[i+1] );
+        }
+        
+        // Finally sum the water amount above each building
+        for(int i = 0; i < n; ++i){
+            int tempLevel = min( maxLeft[i], maxRight[i] ) - arr[i];
+            if( tempLevel > 0 ){
+                totalWater += tempLevel;
+            }
+        }
+        
+        return totalWater;
+    }
+};
+
+// { Driver Code Starts.
+
+int main(){
+    
+    int t;
+    //testcases
+    cin >> t;
+    
+    while(t--){
+        int n;
+        
+        //size of array
+        cin >> n;
+        
+        int a[n];
+        
+        //adding elements to the array
+        for(int i =0;i<n;i++){
+            cin >> a[i];            
+        }
+        Solution obj;
+        //calling trappingWater() function
+        cout << obj.trappingWater(a, n) << endl;
+        
+    }
+    
+    return 0;
+}  // } Driver Code Ends
