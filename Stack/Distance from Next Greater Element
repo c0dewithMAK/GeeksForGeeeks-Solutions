@@ -1,0 +1,39 @@
+#include <iostream>
+#include <vector>
+#include <stack>
+using namespace std;
+
+void calculateNGEDistance(vector<int>& v, vector<int>& nge, int n){
+    stack<int> s;
+    for(int i = 0; i < n; ++i){
+        while( !s.empty() && v[i] > v[s.top()] ){
+            nge[s.top()] = i - s.top();
+            s.pop();
+        }
+        s.push(i);
+    }
+    
+    while( !s.empty() ){
+        nge[s.top()] = 0;
+        s.pop();
+    }
+}
+
+
+int main()
+{
+    int n;
+    cin >> n;
+    vector<int> v(n, 0);
+    vector<int> nge(n, 0);
+    for(int i = 0; i < n; ++i){
+        cin >> v[i];
+    }
+    
+    calculateNGEDistance(v, nge, n);
+    for(int i = 0; i < n; ++i){
+        cout << nge[i] << " ";
+    }
+
+    return 0;
+}
