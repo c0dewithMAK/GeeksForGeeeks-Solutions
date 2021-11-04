@@ -1,0 +1,82 @@
+// { Driver Code Starts
+#include <bits/stdc++.h>
+using namespace std;
+#define MAX 1000
+
+
+ // } Driver Code Ends
+/*You are required to complete this method*/
+
+class Solution{
+  public:
+    int calculateMAH(int arr[],int n)
+    {
+        // This problem makes use of Nearest Smaller to Left (NSL) and Nearest Smaller to
+        // right (NSR) concepts
+        
+        vector<long long> nsl(n), nsr(n);
+        stack<int> st;
+        for(int i=0; i<n; i++) {
+            while(!st.empty() && arr[st.top()] >= arr[i])
+                st.pop();
+                
+            nsl[i] = st.empty() ? -1 : st.top();
+            st.push(i);
+        }
+        
+        while(!st.empty()) st.pop();
+        
+        for(int i=n-1; i>=0; i--) {
+            while(!st.empty() && arr[st.top()] >= arr[i])
+                st.pop();
+                
+            nsr[i] = st.empty() ? n : st.top();
+            st.push(i);
+        }
+        long long res=0;
+        for(int i=0; i<n; i++)
+            res = max(res, arr[i] * (nsr[i]-nsl[i]-1));
+        return res;
+    }
+    
+    int maxArea(int M[MAX][MAX], int n, int m) {
+        int i,j;
+        int finalRes = calculateMAH(M[0],m);
+        for(i = 1; i < n; i++)
+        {
+            for(j = 0; j < m; j++)
+            {
+                if( M[i][j] == 1 )
+                {
+                    M[i][j] = M[i][j] + M[i-1][j];
+                }
+            }
+            finalRes = max( finalRes, calculateMAH(M[i],m) );
+        }
+        
+        return finalRes;
+    }
+};
+
+
+// { Driver Code Starts.
+int main() {
+    int T;
+    cin >> T;
+
+    int M[MAX][MAX];
+
+    while (T--) {
+        int n, m;
+        cin >> n >> m;
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                cin >> M[i][j];
+            }
+        }
+        Solution obj;
+        cout << obj.maxArea(M, n, m) << endl;
+    }
+}
+  // } Driver Code Ends
