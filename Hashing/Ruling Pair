@@ -1,0 +1,61 @@
+// { Driver Code Starts
+//Initial Template for C++
+
+#include <bits/stdc++.h> 
+using namespace std; 
+
+ // } Driver Code Ends
+//User function Template for C++
+
+//Back-end complete function Template for C++
+
+class Solution{
+    
+    public:
+    int sumOfDigits(int num){
+        int sum = 0 ;
+        while( num ){
+            sum += num % 10;
+            num /= 10;
+        }
+        return sum;
+    }
+    
+    int RulingPair(vector<int> arr, int n) 
+    { 
+        unordered_map<int, int> umap;
+        int maxSum = -1;
+    	for(int i = 0; i < n; ++i){
+    	    int tempSum = sumOfDigits(arr[i]);
+    	    if( umap.find(tempSum) == umap.end() ){
+    	        umap[tempSum] = arr[i];
+    	        continue;
+    	    }
+    	    maxSum = max( umap[tempSum] + arr[i], maxSum );
+    	    umap[tempSum] = max( umap[tempSum], arr[i] );
+    	}
+    	return maxSum;
+    }   
+};
+
+
+// { Driver Code Starts.
+
+int main() 
+{ 
+	int t;
+	cin>>t;
+	while(t--)
+	{
+		int n;
+		cin>>n;
+		vector<int> arr(n);
+		for (int i = 0; i < n; ++i)
+			cin>>arr[i];
+	    Solution obj;
+		cout << obj.RulingPair(arr,n)<<"\n";
+	}
+	return 0; 
+} 
+
+  // } Driver Code Ends
